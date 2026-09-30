@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Creeperz Fruit Machine</title>
+<link data-keep rel="preconnect" href="https://fonts.googleapis.com">
+<link data-keep rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link data-keep rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700;800&family=Bungee&family=Bungee+Inline&family=VT323&display=swap">
+<style data-keep>
+/* Layout: a pub fruit machine. Lit marquee on top, three numbered spin stages, two team cabinets, then the board and the spin log. One deliberate dark look. */
+:root {
+  --bg: #16090c;
+  --panel: #241015;
+  --panel-edge: #4a1a22;
+  --cabinet: #7c1123;
+  --cabinet-deep: #4c0913;
+  --gold: #f2c14e;
+  --gold-deep: #b8862a;
+  --cream: #fbf1d8;
+  --ink: #1d1012;
+  --ink-soft: #6d4a3c;
+  --text: #f6ead6;
+  --muted: #c7a88f;
+  --led: #ffb627;
+  --lamp-off: #6b3a1c;
+  --live: #ff5a67;
+  --display: "Bungee", "Arial Black", system-ui, sans-serif;
+  --display-inline: "Bungee Inline", "Bungee", "Arial Black", system-ui, sans-serif;
+  --body: "Barlow", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --led-font: "VT323", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: radial-gradient(1100px 520px at 50% -180px, #3b111a 0%, var(--bg) 62%) no-repeat, var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.45;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 56px; display: grid; gap: 22px; }
+
+/* marquee */
+.marquee {
+  position: relative; text-align: center; padding: 30px 18px 22px; border-radius: 22px;
+  background: linear-gradient(180deg, var(--cabinet), var(--cabinet-deep));
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 0 6px var(--cabinet-deep), 0 18px 40px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.14);
+  overflow: hidden; display: grid; gap: 10px; justify-items: center;
+}
+.bulbs { position: absolute; inset: 7px; pointer-events: none; }
+.bulbs::before, .bulbs::after {
+  content: ""; position: absolute; left: 6px; right: 6px; height: 10px;
+  background:
+    radial-gradient(circle at 5px 5px, var(--gold) 0 3.5px, transparent 4.5px) 0 0 / 22px 10px repeat-x,
+    radial-gradient(circle at 16px 5px, var(--lamp-off) 0 3.5px, transparent 4.5px) 0 0 / 22px 10px repeat-x;
+  animation: chase 1s steps(2) infinite;
+}
+.bulbs::before { top: 0; }
+.bulbs::after { bottom: 0; animation-direction: reverse; }
+@keyframes chase { to { background-position: 22px 0, 22px 0; } }
+.kicker { font-family: var(--display); letter-spacing: .2em; font-size: 13px; color: var(--cream); opacity: .85; margin: 0; }
+.marquee h1 {
+  font-family: var(--display-inline); font-weight: 400; font-size: clamp(34px, 7.4vw, 66px); line-height: 1.02;
+  color: var(--gold); margin: 0; letter-spacing: .01em; text-wrap: balance;
+  text-shadow: 0 4px 0 var(--cabinet-deep), 0 0 22px rgba(242,193,78,.4);
+}
+.strap { max-width: 60ch; margin: 0; color: var(--cream); opacity: .92; text-wrap: balance; }
+.tabs { display: inline-flex; gap: 6px; padding: 5px; border-radius: 999px; background: rgba(0,0,0,.28); border: 1px solid rgba(242,193,78,.35); }
+.tab {
+  font: 800 14px/1 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--cream);
+  background: transparent; border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer;
+}
+.tab[aria-selected="true"] { background: var(--gold); color: var(--ink); }
+.tab:focus-visible, .pull:focus-visible, .ghost:focus-visible, select:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+.banner { margin: 0; max-width: 62ch; border-radius: 12px; padding: 10px 14px; font-weight: 700; }
+.banner.live { background: rgba(255,90,103,.16); border: 1px solid var(--live); color: #ffd7db; }
+.banner.info { background: rgba(242,193,78,.12); border: 1px solid var(--gold-deep); color: var(--cream); }
+.status { margin: 0; min-height: 1.45em; color: var(--muted); font-weight: 600; }
+
+/* stages */
+.stage { background: linear-gradient(180deg, #2a1016, #1b0a0e); border: 1px solid var(--panel-edge); border-radius: 18px; padding: 18px; display: grid; gap: 14px; }
+.stage-head { display: grid; gap: 2px; }
+.stage-head h2 { font-family: var(--display); font-weight: 400; font-size: clamp(18px, 3vw, 24px); color: var(--gold); margin: 0; text-wrap: balance; }
+.stage-head p { margin: 0; color: var(--muted); max-width: 70ch; }
+h3.minor { font: 800 13px/1.2 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 6px 0 0; }
+
+/* reels */
+.reel {
+  position: relative; min-width: 0; overflow: hidden; display: grid; align-content: center; gap: 4px;
+  min-height: 92px; padding: 10px 12px; border-radius: 12px; color: var(--ink);
+  background: linear-gradient(180deg, #fffaf0 0%, var(--cream) 42%, #eddcb4 100%);
+  border: 3px solid var(--gold-deep);
+  box-shadow: inset 0 9px 14px rgba(0,0,0,.24), inset 0 -9px 14px rgba(0,0,0,.18), 0 3px 0 #000;
+}
+.reel .lbl { font: 800 11px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: #7a4b3a; }
+.reel .val { font-family: var(--display); font-size: clamp(16px, 2.3vw, 20px); line-height: 1.15; overflow-wrap: anywhere; }
+.reel.big { min-height: 104px; }
+.reel.big .val { font-size: clamp(22px, 4.4vw, 34px); }
+.reel .sub { font-size: 13.5px; line-height: 1.3; color: var(--ink-soft); font-weight: 600; }
+.reel .sub:empty { display: none; }
+.reel.empty .val { color: #b89c86; }
+.reel.spinning .val { filter: blur(1.1px); }
+.reel.landed { animation: thunk .45s ease-out; }
+@keyframes thunk { 0% { transform: translateY(-5px); } 60% { transform: translateY(2px); } 100% { transform: none; } }
+.dot { display: inline-block; width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--ink); vertical-align: -2px; margin-right: 6px; }
+
+/* buttons */
+.pull {
+  justify-self: start; font-family: var(--display); font-weight: 400; font-size: 17px; letter-spacing: .03em; color: #fff;
+  background: radial-gradient(circle at 50% 30%, #ff7474, #c1121f 58%, #7a0b14);
+  border: 3px solid var(--gold); border-radius: 999px; padding: 12px 26px; cursor: pointer;
+  box-shadow: 0 5px 0 #4a060c, 0 9px 18px rgba(0,0,0,.4);
+  transition: transform .06s ease, box-shadow .06s ease;
+}
+.pull:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #4a060c, 0 5px 10px rgba(0,0,0,.35); }
+.pull:disabled { filter: grayscale(.85) brightness(.62); cursor: not-allowed; box-shadow: 0 3px 0 #2a0a0e; }
+.mini {
+  justify-self: start; margin-top: 4px; font-family: var(--display); font-weight: 400; font-size: 13px; letter-spacing: .04em; color: #fff;
+  background: radial-gradient(circle at 50% 30%, #ff7474, #c1121f 60%, #7a0b14);
+  border: 2px solid var(--gold-deep); border-radius: 999px; padding: 7px 14px; cursor: pointer; box-shadow: 0 3px 0 #4a060c;
+}
+.mini:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #4a060c; }
+.mini:disabled { filter: grayscale(.85) brightness(.75); cursor: not-allowed; }
+.mini:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.progress { margin: 0; color: var(--cream); font-weight: 700; }
+.ghost { font: 700 14px/1 var(--body); color: var(--cream); background: transparent; border: 2px solid var(--gold-deep); border-radius: 999px; padding: 10px 16px; cursor: pointer; }
+.ghost.armed { background: var(--live); border-color: var(--live); color: #fff; }
+
+/* cabinets */
+.cabinets { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 18px; }
+.cabinet {
+  display: grid; gap: 12px; padding: 14px; border-radius: 18px; min-width: 0;
+  background: linear-gradient(180deg, var(--cabinet), var(--cabinet-deep));
+  border: 3px solid var(--gold); box-shadow: 0 10px 26px rgba(0,0,0,.45);
+}
+.cab-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; }
+.cab-head h3 { font-family: var(--display); font-weight: 400; margin: 0; font-size: 21px; color: var(--gold); }
+.players { font-weight: 800; color: var(--cream); }
+.reels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+/* wildcards */
+.wildgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 14px; }
+.wcard { display: grid; gap: 10px; padding: 14px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid var(--panel-edge); min-width: 0; }
+.wcard h4 { margin: 0; font-family: var(--display); font-weight: 400; color: var(--gold); font-size: 18px; }
+.wcard p { margin: 0; }
+.wrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+select { font: 600 15px var(--body); padding: 9px 10px; border-radius: 10px; background: var(--cream); color: var(--ink); border: 2px solid var(--gold-deep); }
+.note { color: var(--muted); }
+
+/* board */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 480px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--panel-edge); vertical-align: top; }
+thead th { color: var(--muted); font: 800 12px/1.2 var(--body); letter-spacing: .12em; text-transform: uppercase; }
+tbody th { color: var(--gold); font: 800 13px/1.3 var(--body); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+td { font-weight: 600; }
+.log {
+  background: #0b0507; border: 2px solid #3a1418; border-radius: 12px; padding: 12px 14px;
+  font-family: var(--led-font); font-size: 20px; line-height: 1.25; color: var(--led);
+  text-shadow: 0 0 6px rgba(255,182,39,.45); max-height: 340px; overflow: auto; display: grid; gap: 4px;
+}
+.log .t { color: #c98a1e; }
+.log .empty { color: #8a5a2a; }
+.owner-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* rules */
+.rules-link { color: var(--gold); font-weight: 800; letter-spacing: .04em; }
+.draft { justify-self: start; font: 800 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); background: var(--gold); border-radius: 999px; padding: 6px 10px; }
+.rulegrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.rulecard { min-width: 0; background: rgba(0,0,0,.22); border: 1px solid var(--panel-edge); border-radius: 14px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; }
+.rulecard h3 { font-family: var(--display); font-weight: 400; color: var(--gold); font-size: 17px; margin: 0; }
+.rulecard ul, .rulecard ol { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+.rulecard b { color: var(--cream); }
+.formula { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--cream); color: var(--ink); font-weight: 700; line-height: 1.4; }
+.loophole-list { display: grid; gap: 8px; }
+.lh { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 4px 18px; padding: 10px 14px; border-radius: 12px; background: rgba(0,0,0,.22); border: 1px solid var(--panel-edge); }
+.lh p { margin: 0; }
+.lh-was { color: var(--muted); }
+.lh-now { color: var(--cream); font-weight: 600; }
+.lh-head { background: none; border: 0; padding: 0 14px; font: 800 12px/1.2 var(--body); letter-spacing: .12em; text-transform: uppercase; }
+.lh-head .lh-now { color: var(--gold); font-weight: 800; }
+#rules { scroll-margin-top: 12px; }
+@media (max-width: 560px) {
+  .lh { grid-template-columns: 1fr; }
+  .lh-head { display: none; }
+  .lh-now::before { content: "→ "; color: var(--gold); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulbs::before, .bulbs::after { animation: none; }
+  .reel.landed { animation: none; }
+}
+</style>
+</head>
+<body>
+<main id="app" class="wrap">
+  <header class="marquee">
+    <div class="bulbs" aria-hidden="true"></div>
+    <p class="kicker">Creeperz · Season 2</p>
+    <h1>The Fruit Machine</h1>
+    <p class="strap">The practice copy. Spin as much as you like. The real spins happen on launch night, and every result goes in the chat.</p>
+    <div class="tabs" role="tablist" aria-label="Which machine" hidden>
+      <button class="tab" role="tab" id="tab-live" type="button" aria-selected="false">Live results</button>
+      <button class="tab" role="tab" id="tab-practice" type="button" aria-selected="false">Practice</button>
+    </div>
+    <p id="banner" class="banner info"></p>
+    <p id="status" class="status" aria-live="polite"></p>
+    <a class="rules-link" href="#rules">Read the rules and how to win ↓</a>
+  </header>
+
+  <section class="stage" aria-labelledby="h-map">
+    <div class="stage-head"><h2 id="h-map">Spin 1 · The map</h2><p>One spin for everyone: Riverbend Springs, Zielonka or Hutan Pantai.</p></div>
+    <div class="reel big empty" id="r-map"><span class="lbl">Map</span><span class="val">?</span><span class="sub"></span></div>
+    <button class="pull" id="b-map" type="button">Spin the map</button>
+  </section>
+
+  <section class="stage" aria-labelledby="h-teams">
+    <div class="stage-head"><h2 id="h-teams">Spin 2 · The teams</h2><p>Two teams of two, picked by the machine. There are three possible pairings and each is equally likely.</p></div>
+    <div class="reel big empty" id="r-teams"><span class="lbl">Teams</span><span class="val">?</span><span class="sub"></span></div>
+    <button class="pull" id="b-teams" type="button">Spin the teams</button>
+  </section>
+
+  <section class="stage" aria-labelledby="h-cab">
+    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Brand, colour and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep.</p></div>
+    <div class="cabinets" id="cabinets"></div>
+  </section>
+
+  <section class="stage" aria-labelledby="h-wild">
+    <div class="stage-head"><h2 id="h-wild">Wildcards</h2><p>Re-spin and Swap are played on launch night, once both teams have spun all eight reels. Every other wildcard is banked and played later in the season.</p></div>
+    <div class="wildgrid" id="wild"></div>
+  </section>
+
+  <section class="stage" aria-labelledby="h-board">
+    <div class="stage-head"><h2 id="h-board">The board</h2><p>Where everything landed.</p></div>
+    <div class="table-wrap"><table id="board"></table></div>
+    <h3 class="minor">Spin log</h3>
+    <div class="log" id="log"></div>
+    <div class="owner-tools" id="owner-tools" hidden>
+      <button class="ghost" id="b-reset" type="button">Start over</button>
+      <span class="note" id="reset-note"></span>
+    </div>
+  </section>
+
+  <section class="stage" id="rules" aria-labelledby="h-rules">
+    <div class="stage-head"><h2 id="h-rules">Season 2 rules</h2><p>How to win, how you start, what your spin means, and the Season 1 loopholes that are now shut.</p></div>
+    <span class="draft">Draft · agree before launch</span>
+    <div class="rulegrid">
+      <div class="rulecard">
+        <h3>How to win</h3>
+        <p class="formula">Score = cash + land, kit and buildings at the price you paid + animals and stock at this month's selling price − loans − your starting money</p>
+        <ul>
+          <li>The <b>highest score at the final save</b> wins.</li>
+          <li>The finish is a <b>real date and time</b>, agreed before launch night, so nobody can fast-forward to the end.</li>
+          <li>Map buildings that come with land count as £0. So do solar panels, wind turbines and generators, same as Season 1.</li>
+          <li><b>Robin Hood tax:</b> after each weekly table, the team in front pays 10% of the gap to the team behind.</li>
+          <li>League table and report cards every week, all checked from the save.</li>
+        </ul>
+      </div>
+      <div class="rulecard">
+        <h3>Starting out</h3>
+        <ul>
+          <li><b>£5m per team</b>, the same for both. The tight-budget twist starts on £4m.</li>
+          <li>No land, kit or buildings. You buy everything after the spin.</li>
+          <li>The zones get marked on the map once it's been spun. <b>Land in your zone only.</b></li>
+          <li>Wildcard cash, fields and buildings are added by the admin.</li>
+          <li>Loans are allowed, but they come straight off your score.</li>
+          <li><b>Settings as Season 1:</b> Easy economy, seasonal growth, 1 day a month, time locked at 3x, normal fuel, weeds on, ploughing, lime and stones off, crop destruction off.</li>
+        </ul>
+      </div>
+      <div class="rulecard">
+        <h3>What your spin means</h3>
+        <ul>
+          <li><b>Tractor brand:</b> every tractor must be your brand. Combines, loaders, telehandlers, lorries and tools can be any brand.</li>
+          <li><b>Kit colour:</b> paint everything you can in your colour.</li>
+          <li><b>Zone:</b> all your land, and your yard, sit in your zone.</li>
+          <li><b>Crop:</b> the only crop you grow (No animals gives you a second). Grass is fine for feeding your own animals, but not for selling.</li>
+          <li><b>Animal:</b> the only animal you keep. No dairy, so no dairy cows, goats or buffalo.</li>
+          <li><b>Production:</b> the only production you run, up to 2 of it. The Free production wildcard adds one more that uses your crop or animal.</li>
+          <li><b>Twist:</b> lasts all season. Twist break pauses it for one game month.</li>
+          <li>Contracts and forestry are open to both teams.</li>
+        </ul>
+      </div>
+      <div class="rulecard">
+        <h3>Building</h3>
+        <ul>
+          <li>Everything goes <b>within 130 m of your yard's centre point</b> (about 13 acres). Pick the spot in your zone on launch night. The small-yard twist makes it 90 m (about 6 acres).</li>
+          <li><b>No more than 2 of any one building</b> (the same shop item).</li>
+          <li><b>No more than 2 animal buildings.</b> Beehives are the exception: as many as fit in your yard.</li>
+          <li><b>Lights and deco: up to 60 per team.</b> The Xbox has an object limit for the whole server.</li>
+          <li>AI workers are allowed, unless your twist caps them.</li>
+          <li>Only the admin removes or moves map objects.</li>
+        </ul>
+      </div>
+      <div class="rulecard">
+        <h3>Mods</h3>
+        <ul>
+          <li>Season 1's kit and deco mods carry over, minus the ones below.</li>
+          <li>The list is <b>fixed on launch night</b>. Changes need all four to agree.</li>
+          <li><b>Out:</b> Larger Animal Barns, Farm Fill Stations, and anything else that buys, sells or pays out at its own prices, like pallet shops or subsidies.</li>
+          <li>Modded tractors count for your brand, same as base-game ones.</li>
+          <li>Deco mods are fine, inside the deco limit.</li>
+        </ul>
+      </div>
+      <div class="rulecard">
+        <h3>The admin</h3>
+        <ul>
+          <li>Claude checks the save, posts the tables and puts every ruling in the chat.</li>
+          <li>The save only gets edited for <b>game bugs, the Robin Hood tax and wildcards</b>. Every edit gets posted.</li>
+          <li>Game bugs get refunded. Your own mistakes don't: sell back through the game as normal.</li>
+          <li>No save restores unless all four agree.</li>
+        </ul>
+      </div>
+    </div>
+    <h3 class="minor">Season 1 loopholes, now shut</h3>
+    <div class="loophole-list">
+      <div class="lh lh-head" aria-hidden="true"><p class="lh-was">The loophole</p><p class="lh-now">Season 2 rule</p></div>
+      <div class="lh"><p class="lh-was">Selling the free buildings that come with land</p><p class="lh-now">No profit from map buildings. Any sale money comes off your score.</p></div>
+      <div class="lh"><p class="lh-was">Buying land, stripping it and selling it back</p><p class="lh-now">No selling land.</p></div>
+      <div class="lh"><p class="lh-was">Buying goods and selling them straight on</p><p class="lh-now">Only sell what your own farm produced (crops, animals, products, timber), plus contract pay.</p></div>
+      <div class="lh"><p class="lh-was">Mods that buy or sell at their own prices</p><p class="lh-now">Not installed. Base-game shops and sell points only.</p></div>
+      <div class="lh"><p class="lh-was">Bigger-barn mods packing in thousands of animals</p><p class="lh-now">Base-game barns only, and no more than 2 animal buildings.</p></div>
+      <div class="lh"><p class="lh-was">Stacking the same building over and over</p><p class="lh-now">No more than 2 of any one building.</p></div>
+      <div class="lh"><p class="lh-was">Moving money between farms</p><p class="lh-now">No transfers. Only the admin moves money, for the tax and wildcards.</p></div>
+      <div class="lh"><p class="lh-was">Sitting idle or sleeping to push the clock on</p><p class="lh-now">Log off when you're not playing. No sleeping.</p></div>
+      <div class="lh"><p class="lh-was">Refunds for your own mistakes</p><p class="lh-now">Only game bugs get refunded.</p></div>
+      <div class="lh"><p class="lh-was">Crops and animals not counting until sold</p><p class="lh-now">They count at this month's price, so there's no last-day sell-off.</p></div>
+      <div class="lh"><p class="lh-was">Players landing on the wrong farm</p><p class="lh-now">Stay on your own team's farm. The admin fixes permissions.</p></div>
+      <div class="lh"><p class="lh-was">The server hitting the Xbox object limit</p><p class="lh-now">Yard limit, 2 of any building, a deco limit, and only the admin removes map objects.</p></div>
+    </div>
+  </section>
+</main>
+<script type="application/json" id="state">{"v":1,"map":null,"teams":null,"A":null,"B":null,"used":{"A":false,"B":false},"log":[]}</script>
+<script id="main">
+(() => {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+
+  // The page republishes itself from these pieces, never from the live DOM.
+  const KEEP = [...document.querySelectorAll('title, [data-keep]')].map(n => n.outerHTML).join('');
+  const SHELL = $('#app').outerHTML;
+  const MAIN = $('#main').outerHTML;
+  const RESET_CSS = ':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
+  const PREFIX = '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + RESET_CSS + '</style></head><body>';
+  const SUFFIX = '</body></html>';
+
+  const blank = () => ({ v: 1, map: null, teams: null, A: null, B: null, used: { A: false, B: false }, log: [] });
+  let LIVE;
+  try { LIVE = Object.assign(blank(), JSON.parse($('#state').textContent || '{}')); } catch (e) { LIVE = blank(); }
+  let PRACTICE = blank();
+
+  // ---- the reels -------------------------------------------------------
+  const MAPS = ['Riverbend Springs', 'Zielonka', 'Hutan Pantai'];
+  const PAIRINGS = [
+    [['Norton', 'Danny'], ['George', 'Brad']],
+    [['Norton', 'George'], ['Danny', 'Brad']],
+    [['Norton', 'Brad'], ['Danny', 'George']],
+  ];
+  const BRANDS = ['Fendt', 'John Deere', 'Massey Ferguson', 'New Holland', 'Claas', 'Case IH', 'Valtra', 'Deutz-Fahr'];
+  const COLOURS = { Red: '#d7263d', Green: '#2e9e44', Blue: '#2f6fdb', Yellow: '#f2c14e', Orange: '#f08a24', Black: '#1f1f1f', White: '#f4f1ea', Purple: '#8a4fd8' };
+  const ZONES = ['North-West', 'North-East', 'South-West', 'South-East'];
+  const CROPS = ['Wheat', 'Barley', 'Oats', 'Canola', 'Sunflowers', 'Sugar beet', 'Potatoes', 'Carrots'];
+  const ANIMALS = ['Beef cattle', 'Pigs', 'Sheep', 'Chickens', 'Bees', 'No animals'];
+  const PRODUCTIONS = {
+    'Grain mill': { makes: 'flour', uses: ['Wheat', 'Barley', 'Oats'] },
+    'Oil mill': { makes: 'oil', uses: ['Canola', 'Sunflowers'] },
+    'Sugar mill': { makes: 'sugar', uses: ['Sugar beet'] },
+    'Potato processing': { makes: 'crisps (needs oil too)', uses: ['Potatoes'] },
+    'Soup factory': { makes: 'tinned soup', uses: ['Potatoes', 'Carrots'] },
+    'Preserved food factory': { makes: 'preserved veg', uses: ['Carrots'] },
+    'Spinnery': { makes: 'fabric from wool', uses: ['Sheep'] },
+    'Rope maker': { makes: 'rope from wool', uses: ['Sheep'] },
+  };
+  const TWISTS = {
+    'AI wage cap': 'Hired help capped at £20k a game month.',
+    'Tractor haulage only': 'No lorries, dollies or semi-trailers.',
+    '2 tractors max': 'Combines, loaders and telehandlers don’t count.',
+    '15-machine limit': 'Fifteen machines per team, tools and trailers included.',
+    'Small yard': 'Everything within 90 m instead of 130 m.',
+    'Budget kit': 'No machine over £150k.',
+    'No direct selling': 'Every product gets hauled to market.',
+    'Tight budget': 'Start with 20% less cash.',
+  };
+  const WILDS = {
+    'Re-spin': 'Re-spin one of your own reels on launch night.',
+    'Swap': 'Swap one result with the other team on launch night.',
+    'Robin Hood card': 'Skip paying the tax once, or make them pay double once.',
+    'Free field': 'One field in your zone, worth up to £250k.',
+    'Cash +£250k': 'Paid on day one.',
+    'Free production': 'One production building, worth up to £250k.',
+    'Brand pass': 'Two machines from any brand.',
+    'Twist break': 'Ignore your twist for one game month.',
+  };
+  const TEAM_REELS = [
+    { k: 'brand', label: 'Tractor brand', pool: BRANDS },
+    { k: 'colour', label: 'Kit colour', pool: Object.keys(COLOURS) },
+    { k: 'zone', label: 'Zone', pool: ZONES },
+    { k: 'crop', label: 'Crop', pool: CROPS },
+    { k: 'animal', label: 'Animal', pool: ANIMALS },
+    { k: 'production', label: 'Production', pool: Object.keys(PRODUCTIONS) },
+    { k: 'twist', label: 'Twist', pool: Object.keys(TWISTS) },
+    { k: 'wild', label: 'Wildcard', pool: Object.keys(WILDS) },
+  ];
+  const WILD_TARGETS = { brand: 'Tractor brand', colour: 'Kit colour', crop: 'Crop', animal: 'Animal', twist: 'Twist' };
+
+  // ---- randomness ------------------------------------------------------
+  const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+  const pick = (arr, not = []) => { const pool = arr.filter(x => !not.includes(x)); return pool[rnd(pool.length)]; };
+  const other = k => (k === 'A' ? 'B' : 'A');
+  const pairText = p => p[0].join(' + ') + '  v  ' + p[1].join(' + ');
+
+  function productionsFor(t) {
+    const have = [t.crop, t.extra, t.animal].filter(Boolean);
+    return Object.keys(PRODUCTIONS).filter(p => PRODUCTIONS[p].uses.some(i => have.includes(i)));
+  }
+  function fixProduction(t) {
+    if (!productionsFor(t).includes(t.production)) { t.production = pick(productionsFor(t)); return true; }
+    return false;
+  }
+  // One reel at a time. Brand, colour and zone can't match whatever the other team already has.
+  function rollReel(t, o, rk) {
+    if (rk === 'brand') t.brand = pick(BRANDS, o.brand ? [o.brand] : []);
+    if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), o.colour ? [o.colour] : []);
+    if (rk === 'zone') t.zone = pick(ZONES, o.zone ? [o.zone] : []);
+    if (rk === 'crop') t.crop = pick(CROPS, t.extra ? [t.extra] : []);
+    if (rk === 'animal') { t.animal = pick(ANIMALS); t.extra = t.animal === 'No animals' ? pick(CROPS, t.crop ? [t.crop] : []) : null; }
+    if (rk === 'production') t.production = pick(productionsFor(t));
+    if (rk === 'twist') t.twist = pick(Object.keys(TWISTS));
+    if (rk === 'wild') t.wild = pick(Object.keys(WILDS));
+  }
+  const has = (t, rk) => !!(t && t[rk] != null);
+  const full = t => TEAM_REELS.every(r => has(t, r.k));
+  const canRoll = (s, k, rk) => !!s.teams && !has(s[k], rk) && (rk !== 'production' || (has(s[k], 'crop') && has(s[k], 'animal')));
+  const show = (k, t) => (k === 'animal' && t.animal === 'No animals' ? 'No animals + ' + t.extra : t[k]);
+  function subFor(k, t, used) {
+    if (k === 'production') {
+      const src = [t.crop, t.extra, t.animal].find(x => x && PRODUCTIONS[t.production].uses.includes(x));
+      return 'Makes ' + PRODUCTIONS[t.production].makes + ', from your ' + (src || '').toLowerCase() + '.';
+    }
+    if (k === 'animal' && t.animal === 'No animals') return 'Extra crop instead of animals.';
+    if (k === 'twist') return TWISTS[t.twist];
+    if (k === 'wild') return used ? 'Played on launch night.' : WILDS[t.wild];
+    return '';
+  }
+
+  // ---- capabilities ----------------------------------------------------
+  let artifact = null, canPublish = false, busy = false;
+  let VIEW = 'practice';
+  function hasAny(s) { return !!(s.map || s.teams || s.A || s.B || s.log.length); }
+  const S = () => (VIEW === 'live' ? LIVE : PRACTICE);
+  const liveLocked = () => VIEW === 'live' && !canPublish;
+
+  // ---- saving ----------------------------------------------------------
+  function buildDoc(state) {
+    const json = JSON.stringify(state).replace(/</g, '\\u003c');
+    return PREFIX + KEEP + SHELL + '<script type="application/json" id="state">' + json + '<\/script>' + MAIN + SUFFIX;
+  }
+  async function commit(next, before) {
+    if (VIEW !== 'live') { PRACTICE = next; return true; }
+    LIVE = next;
+    status('Saving to the page…');
+    try {
+      await artifact.publish(buildDoc(LIVE));
+      status('Saved. Loading the saved page…');
+      return true;
+    } catch (e) {
+      const code = e && e.code;
+      LIVE = before;
+      if (code === 'conflict') status('Someone saved first. Loading the latest results…');
+      else if (['not_writer', 'not_granted', 'not_declared', 'consent_required', 'capability_disabled', 'capability_removed'].includes(code)) {
+        canPublish = false; status('This view can’t save live spins, so that one didn’t count. Practice is still open.');
+      } else if (code === 'rate_limited') status('Saving too fast. Give it a moment, then spin again. That one didn’t count.');
+      else status('That spin couldn’t be saved (' + ((e && e.message) || 'unknown error') + '), so it didn’t count. Try again.');
+      return false;
+    }
+  }
+  const stamp = () => new Date().toISOString();
+  function status(msg) { $('#status').textContent = msg; }
+
+  // ---- animation -------------------------------------------------------
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animate(valEl, pool, final, ms) {
+    return new Promise(res => {
+      const box = valEl.closest('.reel');
+      box.classList.remove('empty');
+      const land = () => {
+        valEl.textContent = final; box.classList.remove('spinning'); box.classList.add('landed');
+        setTimeout(() => box.classList.remove('landed'), 500); res();
+      };
+      if (reduce) { setTimeout(land, 150); return; }
+      box.classList.add('spinning');
+      const start = performance.now(); let last = 0;
+      const tick = now => {
+        const p = (now - start) / ms;
+        if (p >= 1) { land(); return; }
+        if (now - last > 45 + 260 * p * p) { valEl.textContent = pool[rnd(pool.length)]; last = now; }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  function setBusy(b) { busy = b; document.querySelectorAll('.pull, .mini, #wild button, #wild select, .tab, #b-reset').forEach(el => { el.disabled = b || el.dataset.off === '1'; }); }
+
+  // ---- actions ---------------------------------------------------------
+  async function spin(kind) {
+    if (busy) return;
+    const before = structuredClone(S()); const next = structuredClone(S());
+    setBusy(true); status('');
+    let what, result;
+    if (kind === 'map') {
+      next.map = pick(MAPS);
+      await animate($('#r-map .val'), MAPS, next.map, 1900);
+      what = 'Map'; result = next.map;
+    } else if (kind === 'teams') {
+      const p = PAIRINGS[rnd(PAIRINGS.length)];
+      next.teams = { A: p[0], B: p[1] };
+      await animate($('#r-teams .val'), PAIRINGS.map(pairText), pairText(p), 2100);
+      what = 'Teams'; result = pairText(p);
+    }
+    next.log.push({ t: stamp(), what, result });
+    const ok = await commit(next, before);
+    setBusy(false);
+    if (VIEW === 'practice' || !ok) render();
+  }
+
+  async function spinReel(k, rk) {
+    if (busy || !canRoll(S(), k, rk)) return;
+    const before = structuredClone(S()); const next = structuredClone(S());
+    const t = next[k] || (next[k] = {});
+    rollReel(t, next[other(k)] || {}, rk);
+    const reel = TEAM_REELS.find(r => r.k === rk);
+    setBusy(true); status('');
+    const box = $('#cab-' + k).querySelector('[data-reel="' + rk + '"]');
+    box.querySelector('.sub').textContent = '';
+    await animate(box.querySelector('.val'), reel.pool, show(rk, t), rk === 'twist' || rk === 'wild' ? 2400 : 1900);
+    next.log.push({ t: stamp(), what: 'Team ' + k + ' · ' + reel.label, result: show(rk, t) });
+    const ok = await commit(next, before);
+    setBusy(false);
+    if (VIEW === 'practice' || !ok) render();
+  }
+
+  async function playWild(k) {
+    if (busy) return;
+    const s = S(); const t = s[k]; const target = $('#wsel-' + k).value;
+    const before = structuredClone(s); const next = structuredClone(s);
+    const me = next[k], them = next[other(k)];
+    const was = show(target, me);
+    let extraNote = '';
+    const extras = { [k]: me.extra, [other(k)]: them.extra };
+    if (t.wild === 'Re-spin') {
+      if (target === 'brand') me.brand = pick(BRANDS, [me.brand, them.brand]);
+      if (target === 'colour') me.colour = pick(Object.keys(COLOURS), [me.colour, them.colour]);
+      if (target === 'crop') { me.crop = pick(CROPS, [me.crop]); if (me.extra === me.crop) me.extra = pick(CROPS, [me.crop]); }
+      if (target === 'animal') { me.animal = pick(ANIMALS, [me.animal]); me.extra = me.animal === 'No animals' ? pick(CROPS, [me.crop]) : null; }
+      if (target === 'twist') me.twist = pick(Object.keys(TWISTS), [me.twist]);
+    } else {
+      if (target === 'animal') { [me.animal, them.animal] = [them.animal, me.animal]; [me.extra, them.extra] = [them.extra, me.extra]; }
+      else { [me[target], them[target]] = [them[target], me[target]]; }
+      if (me.extra === me.crop) me.extra = pick(CROPS, [me.crop]);
+      if (them.extra && them.extra === them.crop) them.extra = pick(CROPS, [them.crop]);
+    }
+    [[k, me], [other(k), them]].forEach(([key, team]) => {
+      if (target !== 'animal' && team.extra && team.extra !== extras[key]) extraNote += ' Team ' + key + '’s extra crop now ' + team.extra + '.';
+    });
+    if (fixProduction(me)) extraNote += ' Team ' + k + '’s production now ' + me.production + '.';
+    if (fixProduction(them)) extraNote += ' Team ' + other(k) + '’s production now ' + them.production + '.';
+    next.used[k] = true;
+    setBusy(true); status('');
+    const cab = $('#cab-' + k);
+    await animate(cab.querySelector('[data-reel="' + target + '"] .val'), TEAM_REELS.find(r => r.k === target).pool, show(target, me), 1600);
+    if (t.wild === 'Swap') await animate($('#cab-' + other(k)).querySelector('[data-reel="' + target + '"] .val'), TEAM_REELS.find(r => r.k === target).pool, show(target, them), 900);
+    next.log.push({ t: stamp(), what: 'Team ' + k + ' wildcard', result: t.wild + ' on ' + WILD_TARGETS[target] + ': ' + was + ' → ' + show(target, me) + '.' + extraNote });
+    const ok = await commit(next, before);
+    setBusy(false);
+    if (VIEW === 'practice' || !ok) render();
+  }
+
+  let resetArmed = 0;
+  async function resetAll() {
+    if (busy) return;
+    if (VIEW === 'practice') { PRACTICE = blank(); render(); status('Practice machine cleared.'); return; }
+    if (Date.now() - resetArmed > 5000) {
+      resetArmed = Date.now(); $('#b-reset').classList.add('armed'); $('#b-reset').textContent = 'Tap again to wipe the results';
+      $('#reset-note').textContent = 'The log keeps every spin, including this restart.';
+      setTimeout(() => { if (Date.now() - resetArmed >= 5000) render(); }, 5100);
+      return;
+    }
+    const before = structuredClone(LIVE); const next = blank();
+    next.log = LIVE.log.concat([{ t: stamp(), what: 'Start over', result: 'Results wiped. Everything above this line was spun before the restart.' }]);
+    setBusy(true);
+    const ok = await commit(next, before);
+    setBusy(false);
+    if (!ok) render();
+  }
+
+  // ---- rendering -------------------------------------------------------
+  function buildCabinets() {
+    $('#cabinets').innerHTML = ['A', 'B'].map(k =>
+      '<article class="cabinet" id="cab-' + k + '"><div class="cab-head"><h3>Team ' + k + '</h3><span class="players" data-players></span></div>' +
+      '<div class="reels">' + TEAM_REELS.map(r => '<div class="reel empty" data-reel="' + r.k + '"><span class="lbl">' + r.label + '</span><span class="val">?</span><span class="sub"></span>' +
+        '<button class="mini" type="button" data-spin="' + k + ':' + r.k + '" aria-label="Spin Team ' + k + ' ' + r.label.toLowerCase() + '">Spin</button></div>').join('') + '</div>' +
+      '<p class="progress" data-progress></p></article>').join('');
+    document.querySelectorAll('[data-spin]').forEach(b => b.addEventListener('click', () => { const [k, rk] = b.dataset.spin.split(':'); spinReel(k, rk); }));
+  }
+  function setReel(box, val, sub, colour) {
+    box.classList.toggle('empty', !val);
+    const v = box.querySelector('.val'); v.textContent = val || '?';
+    if (colour) { const d = document.createElement('span'); d.className = 'dot'; d.style.background = colour; v.prepend(d); }
+    box.querySelector('.sub').textContent = sub || '';
+  }
+  function button(el, on, label) { el.dataset.off = on ? '0' : '1'; el.disabled = busy || !on; if (label) el.textContent = label; }
+
+  function render() {
+    const s = S();
+    $('#tab-live').setAttribute('aria-selected', String(VIEW === 'live'));
+    $('#tab-practice').setAttribute('aria-selected', String(VIEW === 'practice'));
+    const banner = $('#banner');
+    if (VIEW === 'live' && canPublish) { banner.className = 'banner live'; banner.textContent = 'You’re live. Every spin here is saved to this page for everyone and written in the log.'; }
+    else if (VIEW === 'live') { banner.className = 'banner info'; banner.textContent = hasAny(LIVE) ? 'These are the live results, saved as they were spun.' : 'Nothing has been spun live yet. Have a go on the Practice machine while you wait.'; }
+    else { banner.className = 'banner info'; banner.textContent = 'Practice machine. Spin as much as you like: nothing here is saved or shown to anyone else.'; }
+
+    setReel($('#r-map'), s.map, s.map ? '' : '');
+    button($('#b-map'), !s.map && !liveLocked(), s.map ? 'Map spun' : 'Spin the map');
+    setReel($('#r-teams'), s.teams ? pairText([s.teams.A, s.teams.B]) : null, s.teams ? 'Team A: ' + s.teams.A.join(' + ') + '. Team B: ' + s.teams.B.join(' + ') + '.' : '');
+    button($('#b-teams'), !!s.map && !s.teams && !liveLocked(), s.teams ? 'Teams spun' : 'Spin the teams');
+
+    ['A', 'B'].forEach(k => {
+      const cab = $('#cab-' + k); const t = s[k];
+      cab.querySelector('[data-players]').textContent = s.teams ? s.teams[k].join(' + ') : 'Waiting for the team spin';
+      TEAM_REELS.forEach(r => {
+        const box = cab.querySelector('[data-reel="' + r.k + '"]');
+        const done = has(t, r.k);
+        const waiting = r.k === 'production' && !done && !(has(t, 'crop') && has(t, 'animal'));
+        setReel(box, done ? show(r.k, t) : null, done ? subFor(r.k, t, s.used[k]) : waiting && s.teams ? 'Unlocks once crop and animal have landed.' : '', done && r.k === 'colour' ? COLOURS[t.colour] : null);
+        const b = box.querySelector('[data-spin]');
+        b.hidden = done;
+        button(b, canRoll(s, k, r.k) && !liveLocked());
+      });
+      const n = TEAM_REELS.filter(r => has(t, r.k)).length;
+      cab.querySelector('[data-progress]').textContent = !s.teams ? 'Reels open once the teams are spun.' : n === TEAM_REELS.length ? 'All eight reels spun.' : n + ' of ' + TEAM_REELS.length + ' reels spun.';
+    });
+
+    const wild = $('#wild');
+    if (!(full(s.A) && full(s.B))) wild.innerHTML = '<p class="note">The wildcards appear here once both teams have spun all eight reels.</p>';
+    else {
+      wild.innerHTML = ['A', 'B'].map(k => {
+        const t = s[k]; const live = t.wild === 'Re-spin' || t.wild === 'Swap';
+        const body = !live ? '<p>' + WILDS[t.wild] + '</p><p class="note">Banked for later in the season.</p>'
+          : s.used[k] ? '<p class="note">Played on launch night. See the log.</p>'
+          : '<p>' + WILDS[t.wild] + '</p><div class="wrow"><label class="note" for="wsel-' + k + '">Reel</label><select id="wsel-' + k + '">' +
+            Object.keys(WILD_TARGETS).map(x => '<option value="' + x + '">' + WILD_TARGETS[x] + '</option>').join('') +
+            '</select><button class="pull" type="button" data-wild="' + k + '">Play ' + t.wild + '</button></div>';
+        return '<div class="wcard"><h4>Team ' + k + ': ' + t.wild + '</h4><p class="note">' + s.teams[k].join(' + ') + '</p>' + body + '</div>';
+      }).join('');
+      wild.querySelectorAll('[data-wild]').forEach(b => { button(b, !liveLocked()); b.addEventListener('click', () => playWild(b.dataset.wild)); });
+      wild.querySelectorAll('select').forEach(el => { el.dataset.off = liveLocked() ? '1' : '0'; el.disabled = busy || liveLocked(); });
+    }
+
+    const board = $('#board');
+    board.innerHTML = '<thead><tr><th scope="col"></th><th scope="col">Team A</th><th scope="col">Team B</th></tr></thead><tbody></tbody>';
+    const tb = board.querySelector('tbody');
+    [{ k: 'players', label: 'Players' }].concat(TEAM_REELS).forEach(r => {
+      const tr = document.createElement('tr');
+      const th = document.createElement('th'); th.scope = 'row'; th.textContent = r.label; tr.append(th);
+      ['A', 'B'].forEach(k => {
+        const td = document.createElement('td');
+        if (r.k === 'players') td.textContent = s.teams ? s.teams[k].join(' + ') : '—';
+        else td.textContent = has(s[k], r.k) ? show(r.k, s[k]) + (r.k === 'wild' && s.used[k] ? ' (played)' : '') : '—';
+        tr.append(td);
+      });
+      tb.append(tr);
+    });
+    const mapRow = document.createElement('tr');
+    mapRow.innerHTML = '<th scope="row">Map</th><td colspan="2"></td>';
+    mapRow.querySelector('td').textContent = s.map || '—';
+    tb.prepend(mapRow);
+
+    const log = $('#log'); log.innerHTML = '';
+    if (!s.log.length) { const p = document.createElement('div'); p.className = 'empty'; p.textContent = VIEW === 'live' ? 'NO LIVE SPINS YET' : 'NO PRACTICE SPINS YET'; log.append(p); }
+    s.log.slice().reverse().forEach(e => {
+      const row = document.createElement('div');
+      const tm = document.createElement('span'); tm.className = 't';
+      tm.textContent = new Date(e.t).toLocaleString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase() + '  ';
+      row.append(tm, document.createTextNode(e.what.toUpperCase() + ' → ' + e.result));
+      log.append(row);
+    });
+
+    const tools = $('#owner-tools');
+    tools.hidden = !(VIEW === 'practice' ? hasAny(PRACTICE) : canPublish && hasAny(LIVE));
+    const rb = $('#b-reset'); rb.classList.remove('armed'); rb.textContent = VIEW === 'practice' ? 'Clear practice' : 'Start over';
+    $('#reset-note').textContent = VIEW === 'practice' ? '' : 'Wipes the live results. The log keeps every spin.';
+    resetArmed = 0;
+  }
+
+  // ---- wire up ---------------------------------------------------------
+  buildCabinets();
+  $('#b-map').addEventListener('click', () => spin('map'));
+  $('#b-teams').addEventListener('click', () => spin('teams'));
+  $('#b-reset').addEventListener('click', resetAll);
+  $('#tab-live').addEventListener('click', () => { if (!busy) { VIEW = 'live'; status(''); render(); } });
+  $('#tab-practice').addEventListener('click', () => { if (!busy) { VIEW = 'practice'; status(''); render(); } });
+  render();
+
+  // Live spins light up once the viewer confirms this view can save the page.
+  (async () => {
+    try {
+      if (window.claude && window.claude.use) {
+        const [a, u] = await Promise.all([window.claude.use('artifact'), window.claude.use('user')]);
+        artifact = a;
+        canPublish = !!a && !!(u && (await u.canEdit()));
+      }
+    } catch (e) { canPublish = false; }
+    if (!busy) render();
+  })();
+})();
+</script>
+</body>
+</html>
