@@ -225,12 +225,12 @@ td { font-weight: 600; }
   </section>
 
   <section class="stage" aria-labelledby="h-cab">
-    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Brand, colour and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep.</p></div>
+    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep.</p></div>
     <div class="cabinets" id="cabinets"></div>
   </section>
 
   <section class="stage" aria-labelledby="h-wild">
-    <div class="stage-head"><h2 id="h-wild">Wildcards</h2><p>Re-spin and Swap are played on launch night, once both teams have spun all eight reels. Every other wildcard is banked and played later in the season.</p></div>
+    <div class="stage-head"><h2 id="h-wild">Wildcards</h2><p>Re-spin and Swap are played on launch night, once both teams have spun all nine reels. Every other wildcard is banked and played later in the season.</p></div>
     <div class="wildgrid" id="wild"></div>
   </section>
 
@@ -268,12 +268,13 @@ td { font-weight: 600; }
           <li>The zones get marked on the map once it's been spun. <b>Land in your zone only.</b></li>
           <li>Wildcard cash, fields and buildings are added by the admin.</li>
           <li>Loans are allowed, but they come straight off your score.</li>
-          <li><b>Settings as Season 1:</b> Easy economy, seasonal growth, 1 day a month, time locked at 3x, normal fuel, weeds on, ploughing, lime and stones off, crop destruction off.</li>
+          <li><b>Settings as Season 1:</b> Easy economy, seasonal growth, 1 day a month, time at 5x, normal fuel, weeds on, ploughing, lime and stones off, crop destruction off.</li>
         </ul>
       </div>
       <div class="rulecard">
         <h3>What your spin means</h3>
         <ul>
+          <li><b>Farm name:</b> what your farm's called in the game, picked from 100. No renaming it.</li>
           <li><b>Tractor brand:</b> every tractor must be your brand. Combines, loaders, telehandlers, lorries and tools can be any brand.</li>
           <li><b>Kit colour:</b> paint everything you can in your colour.</li>
           <li><b>Zone:</b> all your land, and your yard, sit in your zone.</li>
@@ -360,7 +361,8 @@ td { font-weight: 600; }
     [['Norton', 'Brad'], ['Danny', 'George']],
   ];
   const BRANDS = ['Fendt', 'John Deere', 'Massey Ferguson', 'New Holland', 'Claas', 'Case IH', 'Valtra', 'Deutz-Fahr'];
-  const COLOURS = { Red: '#d7263d', Green: '#2e9e44', Blue: '#2f6fdb', Yellow: '#f2c14e', Orange: '#f08a24', Black: '#1f1f1f', White: '#f4f1ea', Purple: '#8a4fd8' };
+  const COLOURS = { Red: '#d7263d', Green: '#2e9e44', Blue: '#2f6fdb', Yellow: '#f2c14e', Orange: '#f08a24', Black: '#1f1f1f', White: '#f4f1ea', Purple: '#8a4fd8',
+                    Pink: '#e95d9f', Lime: '#9ccc3c', Teal: '#16a3a0', 'Sky blue': '#66bdf0', Navy: '#1e2f6b', Burgundy: '#7d1f3d', Brown: '#7b4a26', Silver: '#b8bec6' };
   const ZONES = ['North-West', 'North-East', 'South-West', 'South-East'];
   const CROPS = ['Wheat', 'Barley', 'Oats', 'Canola', 'Sunflowers', 'Sugar beet', 'Potatoes', 'Carrots'];
   const ANIMALS = ['Beef cattle', 'Pigs', 'Sheep', 'Chickens', 'Bees', 'No animals'];
@@ -394,7 +396,11 @@ td { font-weight: 600; }
     'Brand pass': 'Two machines from any brand.',
     'Twist break': 'Ignore your twist for one game month.',
   };
+  // 100 farm names (Norton, 1 Oct: "pun/innuendo farm names and make the farm name a spin as well"). The two teams never get the same one.
+  const FARM_NAMES = [
+    'Moo-lin Rouge', 'Udderly Filthy', 'Udder Nonsense', 'Steak Out', 'Bull Shed', 'Load of Bull', 'Horny Bull Ranch', 'Hoof Hearted', 'Till the Cows Come Home', 'Cowabunga Farms', 'Meat & Two Veg', 'Cream of the Crop', 'Cockermouth Cattle Co.', 'Pigs Might Fly', 'Hog Wild', 'Hogwarts Farm', 'Boar Necessities', 'Bacon Me Crazy', 'Swine & Dine', 'Squeal Deal', 'Snout of Order', 'Porky Pies', 'Pork Sword Pigs', 'Trotters Independent', 'Penistone Pigs', 'Bangers & Mash', 'Sausage Fest Farm', 'Shear Pleasure', 'Shear Madness', 'Ram Raiders', 'Ram It Home', 'Tup Gear', 'Baa Humbug', 'Mutton Dressed as Lamb', 'Lamb Shank Redemption', 'Wham Bam Thank Ewe', 'Big Cock Poultry', 'Cock & Bull Farm', 'Cluck Off', 'Cluck Around & Find Out', 'Plucking Hell', 'Fowl Play', 'Chick Magnets', 'Great Cockup Farm', 'Buzz Off', 'Honey Trap', 'Beehive Yourself', 'To Bee or Not to Bee', 'The Bee’s Knees', 'Hay Big Spender', 'Hay Big Boy', 'Fifty Shades of Hay', 'Roll in the Hay', 'Big Bale Energy', 'Bale Out', 'Grassholes', 'Silage Idiots', 'Muckingham Palace', 'Muck & Fumble', 'Muck Off', 'Muck Me Gently', 'Slurry Not Sorry', 'Pump & Dump Slurry', 'Shitterton Hall', 'Corn Stars', 'Cornhub', 'Wheat Dreams', 'Wetwang Wheat', 'Oat of Office', 'Get Your Oats', 'Sow Your Wild Oats', 'Rye Me a River', 'Yield of Dreams', 'Lettuce Turnip the Beet', 'Kale Yeah', 'Peas Off', 'Beet It', 'Swede Dreams', 'Spuds & Studs', 'Fry Hard', 'Sugar Daddies', 'Melons & Plums', 'Big Marrow Farm', 'Dick Turnip', 'Ploughed Hard', 'Long Hard Furrow', 'Drill Seekers', 'PTO Shafted', 'Combine & Conquer', 'Barn to Be Wild', 'Farmed & Dangerous', 'Farmageddon', 'E-I-E-I-Owe', 'Harvest Mooners', 'Fork Off', 'Bell End Barns', 'Scratchy Bottom Farm', 'Tilly Willy Farm', 'Big Johnson Holdings', 'Seymour Butts Farm'];
   const TEAM_REELS = [
+    { k: 'name', label: 'Farm name', pool: FARM_NAMES },
     { k: 'brand', label: 'Tractor brand', pool: BRANDS },
     { k: 'colour', label: 'Kit colour', pool: Object.keys(COLOURS) },
     { k: 'zone', label: 'Zone', pool: ZONES },
@@ -404,7 +410,7 @@ td { font-weight: 600; }
     { k: 'twist', label: 'Twist', pool: Object.keys(TWISTS) },
     { k: 'wild', label: 'Wildcard', pool: Object.keys(WILDS) },
   ];
-  const WILD_TARGETS = { brand: 'Tractor brand', colour: 'Kit colour', crop: 'Crop', animal: 'Animal', twist: 'Twist' };
+  const WILD_TARGETS = { name: 'Farm name', brand: 'Tractor brand', colour: 'Kit colour', crop: 'Crop', animal: 'Animal', twist: 'Twist' };
 
   // ---- randomness ------------------------------------------------------
   const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
@@ -422,6 +428,7 @@ td { font-weight: 600; }
   }
   // One reel at a time. Brand, colour and zone can't match whatever the other team already has.
   function rollReel(t, o, rk) {
+    if (rk === 'name') t.name = pick(FARM_NAMES, o.name ? [o.name] : []);
     if (rk === 'brand') t.brand = pick(BRANDS, o.brand ? [o.brand] : []);
     if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), o.colour ? [o.colour] : []);
     if (rk === 'zone') t.zone = pick(ZONES, o.zone ? [o.zone] : []);
@@ -551,6 +558,7 @@ td { font-weight: 600; }
     let extraNote = '';
     const extras = { [k]: me.extra, [other(k)]: them.extra };
     if (t.wild === 'Re-spin') {
+      if (target === 'name') me.name = pick(FARM_NAMES, [me.name, them.name]);
       if (target === 'brand') me.brand = pick(BRANDS, [me.brand, them.brand]);
       if (target === 'colour') me.colour = pick(Object.keys(COLOURS), [me.colour, them.colour]);
       if (target === 'crop') { me.crop = pick(CROPS, [me.crop]); if (me.extra === me.crop) me.extra = pick(CROPS, [me.crop]); }
@@ -640,11 +648,11 @@ td { font-weight: 600; }
         button(b, canRoll(s, k, r.k) && !liveLocked());
       });
       const n = TEAM_REELS.filter(r => has(t, r.k)).length;
-      cab.querySelector('[data-progress]').textContent = !s.teams ? 'Reels open once the teams are spun.' : n === TEAM_REELS.length ? 'All eight reels spun.' : n + ' of ' + TEAM_REELS.length + ' reels spun.';
+      cab.querySelector('[data-progress]').textContent = !s.teams ? 'Reels open once the teams are spun.' : n === TEAM_REELS.length ? 'All nine reels spun.' : n + ' of ' + TEAM_REELS.length + ' reels spun.';
     });
 
     const wild = $('#wild');
-    if (!(full(s.A) && full(s.B))) wild.innerHTML = '<p class="note">The wildcards appear here once both teams have spun all eight reels.</p>';
+    if (!(full(s.A) && full(s.B))) wild.innerHTML = '<p class="note">The wildcards appear here once both teams have spun all nine reels.</p>';
     else {
       wild.innerHTML = ['A', 'B'].map(k => {
         const t = s[k]; const live = t.wild === 'Re-spin' || t.wild === 'Swap';
