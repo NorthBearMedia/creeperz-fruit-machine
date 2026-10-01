@@ -429,8 +429,6 @@ td { font-weight: 600; }
   const pick = (arr, not = []) => { const pool = arr.filter(x => !not.includes(x)); return pool[rnd(pool.length)]; };
   const other = k => (k === 'A' ? 'B' : 'A');
   const pairText = p => p[0].join(' + ') + '  v  ' + p[1].join(' + ');
-  // Norton, 1 Oct: the four agreed the teams on party chat. Live, the reel spins for the stream and lands on them; practice spins stay random.
-  const AGREED_TEAMS = [['Norton', 'George'], ['Danny', 'Brad']];
 
   function productionsFor(t) {
     const have = [t.crop, t.extra, t.animal].filter(Boolean);
@@ -537,8 +535,7 @@ td { font-weight: 600; }
       await animate($('#r-map .val'), MAPS, next.map, 1900);
       what = 'Map'; result = next.map;
     } else if (kind === 'teams') {
-      const agreed = VIEW === 'live';
-      const p = agreed ? AGREED_TEAMS : PAIRINGS[rnd(PAIRINGS.length)];
+      const p = PAIRINGS[rnd(PAIRINGS.length)];
       next.teams = { A: p[0], B: p[1] };
       await animate($('#r-teams .val'), PAIRINGS.map(pairText), pairText(p), 2100);
       what = 'Teams'; result = pairText(p);
