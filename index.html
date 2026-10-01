@@ -98,6 +98,11 @@ h3.minor { font: 800 13px/1.2 var(--body); letter-spacing: .14em; text-transform
 }
 .reel .lbl { font: 800 11px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: #7a4b3a; }
 .reel .val { font-family: var(--display); font-size: clamp(16px, 2.3vw, 20px); line-height: 1.15; overflow-wrap: anywhere; }
+.reel[data-reel="plate"], .reel[data-reel="wild"] { grid-column: 1 / -1; }
+.reel[data-reel="plate"]:not(.empty) .val { width: fit-content; position: relative; padding: 3px 12px 3px 30px; border: 2px solid #111; border-radius: 6px;
+  background: #f7d117; color: #111; letter-spacing: .06em; white-space: nowrap; }
+.reel[data-reel="plate"]:not(.empty) .val::before { content: "UK"; position: absolute; left: 0; top: 0; bottom: 0; width: 20px; display: grid; place-items: center;
+  border-radius: 3px 0 0 3px; background: #1d4fa3; color: #fff; font: 800 9px/1 var(--body); letter-spacing: 0; }
 .reel.big { min-height: 104px; }
 .reel.big .val { font-size: clamp(22px, 4.4vw, 34px); }
 .reel .sub { font-size: 13.5px; line-height: 1.3; color: var(--ink-soft); font-weight: 600; }
@@ -225,12 +230,12 @@ td { font-weight: 600; }
   </section>
 
   <section class="stage" aria-labelledby="h-cab">
-    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep.</p></div>
+    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour, number plate and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep.</p></div>
     <div class="cabinets" id="cabinets"></div>
   </section>
 
   <section class="stage" aria-labelledby="h-wild">
-    <div class="stage-head"><h2 id="h-wild">Wildcards</h2><p>Re-spin and Swap are played on launch night, once both teams have spun all nine reels. Every other wildcard is banked and played later in the season.</p></div>
+    <div class="stage-head"><h2 id="h-wild">Wildcards</h2><p>Re-spin and Swap are played on launch night, once both teams have spun all ten reels. Every other wildcard is banked and played later in the season.</p></div>
     <div class="wildgrid" id="wild"></div>
   </section>
 
@@ -277,6 +282,7 @@ td { font-weight: 600; }
           <li><b>Farm name:</b> what your farm's called in the game, picked from 100. No renaming it.</li>
           <li><b>Tractor brand:</b> every tractor must be your brand. Combines, loaders, telehandlers, lorries and tools can be any brand.</li>
           <li><b>Kit colour:</b> paint everything you can in your colour.</li>
+          <li><b>Number plate:</b> goes on every machine that takes a plate.</li>
           <li><b>Zone:</b> all your land, and your yard, sit in your zone.</li>
           <li><b>Crop:</b> the only crop you grow (No animals gives you a second). Grass is fine for feeding your own animals, but not for selling.</li>
           <li><b>Animal:</b> the only animal you keep. No dairy, so no dairy cows, goats or buffalo.</li>
@@ -399,9 +405,12 @@ td { font-weight: 600; }
   // 100 farm names (Norton, 1 Oct: "pun/innuendo farm names and make the farm name a spin as well"). The two teams never get the same one.
   const FARM_NAMES = [
     'Moo-lin Rouge', 'Udderly Filthy', 'Udder Nonsense', 'Steak Out', 'Bull Shed', 'Load of Bull', 'Horny Bull Ranch', 'Hoof Hearted', 'Till the Cows Come Home', 'Cowabunga Farms', 'Meat & Two Veg', 'Cream of the Crop', 'Cockermouth Cattle Co.', 'Pigs Might Fly', 'Hog Wild', 'Hogwarts Farm', 'Boar Necessities', 'Bacon Me Crazy', 'Swine & Dine', 'Squeal Deal', 'Snout of Order', 'Porky Pies', 'Pork Sword Pigs', 'Trotters Independent', 'Penistone Pigs', 'Bangers & Mash', 'Sausage Fest Farm', 'Shear Pleasure', 'Shear Madness', 'Ram Raiders', 'Ram It Home', 'Tup Gear', 'Baa Humbug', 'Mutton Dressed as Lamb', 'Lamb Shank Redemption', 'Wham Bam Thank Ewe', 'Big Cock Poultry', 'Cock & Bull Farm', 'Cluck Off', 'Cluck Around & Find Out', 'Plucking Hell', 'Fowl Play', 'Chick Magnets', 'Great Cockup Farm', 'Buzz Off', 'Honey Trap', 'Beehive Yourself', 'To Bee or Not to Bee', 'The Bee’s Knees', 'Hay Big Spender', 'Hay Big Boy', 'Fifty Shades of Hay', 'Roll in the Hay', 'Big Bale Energy', 'Bale Out', 'Grassholes', 'Silage Idiots', 'Muckingham Palace', 'Muck & Fumble', 'Muck Off', 'Muck Me Gently', 'Slurry Not Sorry', 'Pump & Dump Slurry', 'Shitterton Hall', 'Corn Stars', 'Cornhub', 'Wheat Dreams', 'Wetwang Wheat', 'Oat of Office', 'Get Your Oats', 'Sow Your Wild Oats', 'Rye Me a River', 'Yield of Dreams', 'Lettuce Turnip the Beet', 'Kale Yeah', 'Peas Off', 'Beet It', 'Swede Dreams', 'Spuds & Studs', 'Fry Hard', 'Sugar Daddies', 'Melons & Plums', 'Big Marrow Farm', 'Dick Turnip', 'Ploughed Hard', 'Long Hard Furrow', 'Drill Seekers', 'PTO Shafted', 'Combine & Conquer', 'Barn to Be Wild', 'Farmed & Dangerous', 'Farmageddon', 'E-I-E-I-Owe', 'Harvest Mooners', 'Fork Off', 'Bell End Barns', 'Scratchy Bottom Farm', 'Tilly Willy Farm', 'Big Johnson Holdings', 'Seymour Butts Farm'];
+  // 100 number plates (Norton, 1 Oct: "equipment number plates, ruder the better, 100 options"). UK style, 7 characters max so the game takes them.
+  const PLATES = ['B16 C0K', 'C0CK UP', 'B1G D1K', 'KN0B END', 'B3LL END', 'N0B HED', 'W1LLY', 'T0DG3R', 'B0N3R', '5T1FFY', 'CH0D3', 'B4LL B4G', 'N4D5', 'G0N4D5', 'NUT5', 'B4LLS UP', 'B0LL0X', 'B00B5', '5318 008', '80085', 'T1T5', 'T1T5 UP', 'KN0CK3R', 'N1P SL1P', 'BUM 1', 'B1G BUM', 'B0TTY', 'AR53 END', 'A55 H0LE', '5H1T', '5H1T3', '5H1T B0X', 'BUL 5H1T', 'N0 5H1T', 'CR4P', 'TURD 1', 'P00 P00', 'PL0P', 'B1G DUMP', '5K1D MRK', 'P155 P0T', 'P155 UP', 'P15 5ED', 'P15 0FF', 'FA12 TED', 'F4RT5', 'GUFF3R', 'P4RP', '5T1NK3R', 'W4NK3R', 'TW4T', 'PR1CK', 'T0553R', 'T055P0T', 'W4ZZ0CK', 'PL0NK3R', 'MUPP3T', 'NUMPTY', 'PR4T', 'W4LLY', 'G1T', 'B45T4RD', 'BUGG3R', 'BUGR 0FF', '50D 0FF', 'F3CK 0FF', 'N00B', '5W34TY', '5H4G M3', 'HUMP3R', 'B0NK3R5', 'R4NDY', 'FR15KY', 'H0RNY', '53XY 1', '6969', 'N4K3D', '5P4NK3D', 'L1CK 1T', '5UCK 1T', 'BL0W 1T', 'MUCKY', 'MUCK 1', 'DUNG 1', 'C0W P4T', 'R4M 1T', 'PL0W M3', 'M1LK M3', 'CR34MY', 'UDD3R5', 'P0RK3R', 'B4NG3R5', 'S4U54G3', 'C0CK 4', 'D1RTY 1', 'F1LTHY', '5LURRY', 'MUK 5PRD', 'H4Y B4B3', 'FF5 1'];
   const TEAM_REELS = [
     { k: 'name', label: 'Farm name', pool: FARM_NAMES },
     { k: 'brand', label: 'Tractor brand', pool: BRANDS },
+    { k: 'plate', label: 'Number plate', pool: PLATES },
     { k: 'colour', label: 'Kit colour', pool: Object.keys(COLOURS) },
     { k: 'zone', label: 'Zone', pool: ZONES },
     { k: 'crop', label: 'Crop', pool: CROPS },
@@ -410,7 +419,7 @@ td { font-weight: 600; }
     { k: 'twist', label: 'Twist', pool: Object.keys(TWISTS) },
     { k: 'wild', label: 'Wildcard', pool: Object.keys(WILDS) },
   ];
-  const WILD_TARGETS = { name: 'Farm name', brand: 'Tractor brand', colour: 'Kit colour', crop: 'Crop', animal: 'Animal', twist: 'Twist' };
+  const WILD_TARGETS = { name: 'Farm name', brand: 'Tractor brand', colour: 'Kit colour', plate: 'Number plate', crop: 'Crop', animal: 'Animal', twist: 'Twist' };
 
   // ---- randomness ------------------------------------------------------
   const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
@@ -430,6 +439,7 @@ td { font-weight: 600; }
   function rollReel(t, o, rk) {
     if (rk === 'name') t.name = pick(FARM_NAMES, o.name ? [o.name] : []);
     if (rk === 'brand') t.brand = pick(BRANDS, o.brand ? [o.brand] : []);
+    if (rk === 'plate') t.plate = pick(PLATES, o.plate ? [o.plate] : []);
     if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), o.colour ? [o.colour] : []);
     if (rk === 'zone') t.zone = pick(ZONES, o.zone ? [o.zone] : []);
     if (rk === 'crop') t.crop = pick(CROPS, t.extra ? [t.extra] : []);
@@ -560,6 +570,7 @@ td { font-weight: 600; }
     if (t.wild === 'Re-spin') {
       if (target === 'name') me.name = pick(FARM_NAMES, [me.name, them.name]);
       if (target === 'brand') me.brand = pick(BRANDS, [me.brand, them.brand]);
+      if (target === 'plate') me.plate = pick(PLATES, [me.plate, them.plate]);
       if (target === 'colour') me.colour = pick(Object.keys(COLOURS), [me.colour, them.colour]);
       if (target === 'crop') { me.crop = pick(CROPS, [me.crop]); if (me.extra === me.crop) me.extra = pick(CROPS, [me.crop]); }
       if (target === 'animal') { me.animal = pick(ANIMALS, [me.animal]); me.extra = me.animal === 'No animals' ? pick(CROPS, [me.crop]) : null; }
@@ -648,11 +659,11 @@ td { font-weight: 600; }
         button(b, canRoll(s, k, r.k) && !liveLocked());
       });
       const n = TEAM_REELS.filter(r => has(t, r.k)).length;
-      cab.querySelector('[data-progress]').textContent = !s.teams ? 'Reels open once the teams are spun.' : n === TEAM_REELS.length ? 'All nine reels spun.' : n + ' of ' + TEAM_REELS.length + ' reels spun.';
+      cab.querySelector('[data-progress]').textContent = !s.teams ? 'Reels open once the teams are spun.' : n === TEAM_REELS.length ? 'All ten reels spun.' : n + ' of ' + TEAM_REELS.length + ' reels spun.';
     });
 
     const wild = $('#wild');
-    if (!(full(s.A) && full(s.B))) wild.innerHTML = '<p class="note">The wildcards appear here once both teams have spun all nine reels.</p>';
+    if (!(full(s.A) && full(s.B))) wild.innerHTML = '<p class="note">The wildcards appear here once both teams have spun all ten reels.</p>';
     else {
       wild.innerHTML = ['A', 'B'].map(k => {
         const t = s[k]; const live = t.wild === 'Re-spin' || t.wild === 'Swap';
