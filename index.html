@@ -231,7 +231,7 @@ td { font-weight: 600; }
   </section>
 
   <section class="stage" aria-labelledby="h-cab">
-    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour, number plate and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep. Each team also gets <b>one free re-spin</b>, on any reel except the wildcard.</p></div>
+    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour and number plate always come out different for the two teams. The zones are always diagonally opposite, and the second crop always comes from the same earnings group as the first. Production unlocks once crop and animal have landed, and always uses something you grow or keep. Each team also gets <b>one free re-spin</b>, on any reel except the wildcard.</p></div>
     <div class="cabinets" id="cabinets"></div>
   </section>
 
@@ -283,13 +283,13 @@ td { font-weight: 600; }
           <li><b>Free re-spin:</b> each team gets one on launch night, on any reel except the wildcard. Use it or lose it.</li>
           <li><b>Farm name:</b> what your farm's called in the game, picked from 100. No renaming it.</li>
           <li><b>Tractor brand:</b> every tractor must be your brand. Combines, loaders, telehandlers, lorries and tools can be any brand.</li>
-          <li><b>Kit colour:</b> paint everything you can in your colour.</li>
+          <li><b>Farm colour:</b> set your farm's colour in the game to it (or the nearest one), and paint every machine you can in it, tractors included.</li>
           <li><b>Number plate:</b> set it as the custom plate on every machine that takes one. It's 6 characters, so it fits every map's plate.</li>
-          <li><b>Zone:</b> all your land and buildings sit in your zone.</li>
-          <li><b>Crop:</b> the only crop you sow (No animals gives you a second). Seasonal growth is off, so you can sow it straight away. Anything already growing on land you buy is yours to harvest, sell or process. Grass is fine for feeding your own animals, but not for selling.</li>
-          <li><b>Animal:</b> the only animal you keep. No dairy, so no dairy cows, goats or buffalo.</li>
+          <li><b>Zone:</b> all your land and buildings sit in your zone. The two zones are always diagonally opposite, and the lines are set per map so both get a fair share of land.</li>
+          <li><b>Crop:</b> your crop (No animals gives you a second), plus anything your spun production uses. Crops come in two earnings groups, arable (wheat, barley, oats, canola, sunflowers) and roots (potatoes, sugar beet, carrots), and the second team always lands in the first team's group. Seasonal growth is off, so you can sow straight away. Anything already growing on land you buy is yours to harvest, sell or process. Grass is fine for feeding your own animals, but not for selling.</li>
+          <li><b>Animal:</b> the only animal you keep. No dairy (no dairy cows, goats or buffalo) and no bees.</li>
           <li><b>Production:</b> your starting chain. Build up to <b>20 production buildings</b> in all (greenhouses count), of any kind whose inputs all come from your own farm, so wool to fabric to clothes is fine. The Free production wildcard is one of the 20.</li>
-          <li><b>Twist:</b> lasts all season. Twist break pauses it for one game month.</li>
+          <li><b>Twist:</b> lasts all season. Twist break pauses it for three game months.</li>
           <li>Contracts and forestry are open to both teams.</li>
         </ul>
       </div>
@@ -299,9 +299,8 @@ td { font-weight: 600; }
           <li><b>Build anywhere</b> on your own land in your zone.</li>
           <li><b>Up to 20 productions and 5 animal buildings</b> per team (base-game barns only). That keeps the map under the game's own limits of 60 productions and 15 animal buildings.</li>
           <li><b>Everything else: no more than 2 of any one building</b> (the same shop item).</li>
-          <li><b>Beehives</b> don't count as animal buildings: up to 40 per team.</li>
           <li><b>Lights and deco: up to 60 per team.</b> The Xbox has an object limit for the whole server.</li>
-          <li>AI workers are allowed, unless your twist caps them.</li>
+          <li>AI workers are allowed.</li>
           <li>Only the admin removes or moves map objects.</li>
         </ul>
       </div>
@@ -339,7 +338,7 @@ td { font-weight: 600; }
       <div class="lh"><p class="lh-was">Refunds for your own mistakes</p><p class="lh-now">Only game bugs get refunded.</p></div>
       <div class="lh"><p class="lh-was">Crops and animals not counting until sold</p><p class="lh-now">They count at this month's price, so there's no last-day sell-off.</p></div>
       <div class="lh"><p class="lh-was">Players landing on the wrong farm</p><p class="lh-now">Stay on your own team's farm. The admin fixes permissions.</p></div>
-      <div class="lh"><p class="lh-was">The server hitting the Xbox object limit</p><p class="lh-now">Caps on productions, barns, beehives and deco, 2 of any other building, and only the admin removes map objects.</p></div>
+      <div class="lh"><p class="lh-was">The server hitting the Xbox object limit</p><p class="lh-now">Caps on productions, barns and deco, 2 of any other building, and only the admin removes map objects.</p></div>
     </div>
   </section>
 </main>
@@ -374,24 +373,24 @@ td { font-weight: 600; }
                     Pink: '#e95d9f', Lime: '#9ccc3c', Teal: '#16a3a0', 'Sky blue': '#66bdf0', Navy: '#1e2f6b', Burgundy: '#7d1f3d', Brown: '#7b4a26', Silver: '#b8bec6' };
   const ZONES = ['North-West', 'North-East', 'South-West', 'South-East'];
   const CROPS = ['Wheat', 'Barley', 'Oats', 'Canola', 'Sunflowers', 'Sugar beet', 'Potatoes', 'Carrots'];
-  const ANIMALS = ['Beef cattle', 'Pigs', 'Sheep', 'Chickens', 'Bees', 'No animals'];
+  const ANIMALS = ['Beef cattle', 'Pigs', 'Sheep', 'Chickens', 'No animals'];
   const PRODUCTIONS = {
-    'Grain mill': { makes: 'flour', uses: ['Wheat', 'Barley', 'Oats'] },
-    'Oil mill': { makes: 'oil', uses: ['Canola', 'Sunflowers'] },
-    'Sugar mill': { makes: 'sugar', uses: ['Sugar beet'] },
-    'Potato processing': { makes: 'crisps (needs oil too)', uses: ['Potatoes'] },
-    'Soup factory': { makes: 'tinned soup', uses: ['Potatoes', 'Carrots'] },
-    'Preserved food factory': { makes: 'preserved veg', uses: ['Carrots'] },
-    'Spinnery': { makes: 'fabric from wool', uses: ['Sheep'] },
-    'Rope maker': { makes: 'rope from wool', uses: ['Sheep'] },
+    // Norton, 1 Oct: you can also grow anything your spun production uses. The rope maker is gone: its rope is worth less than the wool.
+    'Grain mill': { makes: 'flour', uses: ['Wheat', 'Barley', 'Oats'], grows: 'wheat, barley and oats' },
+    'Oil mill': { makes: 'oil', uses: ['Canola', 'Sunflowers'], grows: 'canola and sunflowers' },
+    'Sugar mill': { makes: 'sugar', uses: ['Sugar beet'], grows: 'sugar beet' },
+    'Potato processing': { makes: 'crisps', uses: ['Potatoes'], grows: 'potatoes, plus canola or sunflowers for the oil' },
+    'Soup factory': { makes: 'tinned soup', uses: ['Potatoes', 'Carrots'], grows: 'potatoes, carrots, parsnips and beetroot' },
+    'Preserved food factory': { makes: 'preserved veg', uses: ['Carrots'], grows: 'carrots, parsnips, beetroot and any other veg it takes' },
+    'Spinnery': { makes: 'fabric', uses: ['Sheep'], grows: 'cotton, on top of your sheep’s wool' },
   };
   const TWISTS = {
-    'AI wage cap': 'Hired help capped at £20k a game month.',
+    'Land cap': 'No more than 100 acres of land.',
     'Tractor haulage only': 'No lorries, dollies or semi-trailers.',
     '2 tractors max': 'Combines, loaders and telehandlers don’t count.',
     '15-machine limit': 'Fifteen machines per team, tools and trailers included.',
     'Lease only': 'Every tractor is leased, never bought.',
-    'Budget kit': 'No machine over £150k.',
+    'Budget kit': 'No machine over £250k.',
     'No direct selling': 'Every product gets hauled to market.',
     'Tight budget': 'Start with 20% less cash.',
   };
@@ -403,12 +402,12 @@ td { font-weight: 600; }
     'Cash +£250k': 'Paid on day one.',
     'Free production': 'One production building, worth up to £250k.',
     'Brand pass': 'Two machines from any brand.',
-    'Twist break': 'Ignore your twist for one game month.',
+    'Twist break': 'Ignore your twist for three game months.',
     'Land grab': 'One plot in the other team’s zone, worth up to £250k. Free.',
     'Free tractor': 'One tractor of your brand, worth up to £250k.',
     'Extra building': 'One more of anything over its limit: a 3rd of a kind, a 6th barn or a 21st production.',
-    'Fuel card': 'Diesel refunded for three game months.',
-    'Wages paid': 'Hired help refunded for three game months.',
+    'Fuel card': 'Free diesel all season.',
+    'Volunteers': 'Free hired help all season.',
     'Insurance': 'One mistake of your own refunded in full.',
   };
   // 100 farm names (Norton, 1 Oct: "pun/innuendo farm names and make the farm name a spin as well"). The two teams never get the same one.
@@ -421,7 +420,7 @@ td { font-weight: 600; }
     { k: 'name', label: 'Farm name', pool: FARM_NAMES },
     { k: 'brand', label: 'Tractor brand', pool: BRANDS },
     { k: 'plate', label: 'Number plate', pool: PLATES },
-    { k: 'colour', label: 'Kit colour', pool: Object.keys(COLOURS) },
+    { k: 'colour', label: 'Farm colour', pool: Object.keys(COLOURS) },
     { k: 'zone', label: 'Zone', pool: ZONES },
     { k: 'crop', label: 'Crop', pool: CROPS },
     { k: 'animal', label: 'Animal', pool: ANIMALS },
@@ -429,13 +428,27 @@ td { font-weight: 600; }
     { k: 'twist', label: 'Twist', pool: Object.keys(TWISTS) },
     { k: 'wild', label: 'Wildcard', pool: Object.keys(WILDS) },
   ];
-  const WILD_TARGETS = { name: 'Farm name', brand: 'Tractor brand', colour: 'Kit colour', plate: 'Number plate', crop: 'Crop', animal: 'Animal', twist: 'Twist' };
+  const WILD_TARGETS = { name: 'Farm name', brand: 'Tractor brand', colour: 'Farm colour', plate: 'Number plate', crop: 'Crop', animal: 'Animal', twist: 'Twist' };
 
   // ---- randomness ------------------------------------------------------
   const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
   const pick = (arr, not = []) => { const pool = arr.filter(x => !not.includes(x)); return pool[rnd(pool.length)]; };
   const other = k => (k === 'A' ? 'B' : 'A');
   const pairText = p => p[0].join(' + ') + '  v  ' + p[1].join(' + ');
+
+  // Norton, 1 Oct: the second team's zone is always diagonally opposite the first team's.
+  const OPPOSITE = { 'North-West': 'South-East', 'North-East': 'South-West', 'South-West': 'North-East', 'South-East': 'North-West' };
+  // Norton, 1 Oct: crops come in two earnings groups (roots earn about three times as much a hectare), and the second team's crop
+  // always comes from the first team's group. Extra crops (No animals) and re-spins stay in the group too.
+  const CROP_GROUP = { Wheat: 'arable', Barley: 'arable', Oats: 'arable', Canola: 'arable', Sunflowers: 'arable', 'Sugar beet': 'roots', Potatoes: 'roots', Carrots: 'roots' };
+  const groupOf = (t, o) => CROP_GROUP[(o && o.crop) || t.crop || t.extra] || null;
+  function pickCrop(t, o, not) {
+    const g = groupOf(t, o), inGroup = c => !g || CROP_GROUP[c] === g;
+    let pool = CROPS.filter(c => inGroup(c) && !not.includes(c));
+    if (!pool.length) pool = CROPS.filter(c => inGroup(c) && c !== t.crop && c !== t.extra);
+    if (!pool.length) pool = CROPS.filter(inGroup);
+    return pool[rnd(pool.length)];
+  }
 
   function productionsFor(t) {
     const have = [t.crop, t.extra, t.animal].filter(Boolean);
@@ -451,9 +464,9 @@ td { font-weight: 600; }
     if (rk === 'brand') t.brand = pick(BRANDS, o.brand ? [o.brand] : []);
     if (rk === 'plate') t.plate = pick(PLATES, o.plate ? [o.plate] : []);
     if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), o.colour ? [o.colour] : []);
-    if (rk === 'zone') t.zone = pick(ZONES, o.zone ? [o.zone] : []);
-    if (rk === 'crop') t.crop = pick(CROPS, t.extra ? [t.extra] : []);
-    if (rk === 'animal') { t.animal = pick(ANIMALS); t.extra = t.animal === 'No animals' ? pick(CROPS, t.crop ? [t.crop] : []) : null; }
+    if (rk === 'zone') t.zone = o.zone ? OPPOSITE[o.zone] : pick(ZONES);
+    if (rk === 'crop') t.crop = pickCrop(t, o, [t.extra, o.crop]);
+    if (rk === 'animal') { t.animal = pick(ANIMALS); t.extra = t.animal === 'No animals' ? pickCrop(t, o, [t.crop, o.crop]) : null; }
     if (rk === 'production') t.production = pick(productionsFor(t));
     if (rk === 'twist') t.twist = pick(Object.keys(TWISTS));
     if (rk === 'wild') t.wild = pick(Object.keys(WILDS));
@@ -464,8 +477,8 @@ td { font-weight: 600; }
   const show = (k, t) => (k === 'animal' && t.animal === 'No animals' ? 'No animals + ' + t.extra : t[k]);
   function subFor(k, t, used) {
     if (k === 'production') {
-      const src = [t.crop, t.extra, t.animal].find(x => x && PRODUCTIONS[t.production].uses.includes(x));
-      return 'Makes ' + PRODUCTIONS[t.production].makes + ', from your ' + (src || '').toLowerCase() + '.';
+      const pr = PRODUCTIONS[t.production];
+      return pr ? 'Makes ' + pr.makes + '. You can also grow ' + pr.grows + '.' : '';
     }
     if (k === 'animal' && t.animal === 'No animals') return 'Extra crop instead of animals.';
     if (k === 'twist') return TWISTS[t.twist];
@@ -582,8 +595,8 @@ td { font-weight: 600; }
       if (target === 'brand') me.brand = pick(BRANDS, [me.brand, them.brand]);
       if (target === 'plate') me.plate = pick(PLATES, [me.plate, them.plate]);
       if (target === 'colour') me.colour = pick(Object.keys(COLOURS), [me.colour, them.colour]);
-      if (target === 'crop') { me.crop = pick(CROPS, [me.crop]); if (me.extra === me.crop) me.extra = pick(CROPS, [me.crop]); }
-      if (target === 'animal') { me.animal = pick(ANIMALS, [me.animal]); me.extra = me.animal === 'No animals' ? pick(CROPS, [me.crop]) : null; }
+      if (target === 'crop') me.crop = pickCrop(me, them, [me.crop, me.extra, them.crop]);
+      if (target === 'animal') { me.animal = pick(ANIMALS, [me.animal]); me.extra = me.animal === 'No animals' ? pickCrop(me, them, [me.crop, them.crop]) : null; }
       if (target === 'twist') me.twist = pick(Object.keys(TWISTS), [me.twist]);
     } else {
       if (target === 'animal') { [me.animal, them.animal] = [them.animal, me.animal]; [me.extra, them.extra] = [them.extra, me.extra]; }
@@ -614,16 +627,16 @@ td { font-weight: 600; }
     if (rk === 'brand') t.brand = pick(BRANDS, [t.brand, o.brand]);
     if (rk === 'plate') t.plate = pick(PLATES, [t.plate, o.plate]);
     if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), [t.colour, o.colour]);
-    if (rk === 'zone') t.zone = pick(ZONES, [t.zone, o.zone]);
-    if (rk === 'crop') t.crop = pick(CROPS, [t.crop, t.extra].filter(Boolean));
-    if (rk === 'animal') { t.animal = pick(ANIMALS, [t.animal]); t.extra = t.animal === 'No animals' ? pick(CROPS, [t.crop]) : null; }
+    if (rk === 'zone') t.zone = pick(ZONES, [t.zone]);
+    if (rk === 'crop') t.crop = pickCrop(t, o, [t.crop, t.extra, o.crop]);
+    if (rk === 'animal') { t.animal = pick(ANIMALS, [t.animal]); t.extra = t.animal === 'No animals' ? pickCrop(t, o, [t.crop, o.crop]) : null; }
     if (rk === 'production') t.production = pick(productionsFor(t), [t.production]);
     if (rk === 'twist') t.twist = pick(Object.keys(TWISTS), [t.twist]);
   }
-  const freeOptions = t => TEAM_REELS.filter(r => r.k !== 'wild' && has(t, r.k) && (r.k !== 'production' || productionsFor(t).length > 1));
+  const freeOptions = (t, o) => TEAM_REELS.filter(r => r.k !== 'wild' && has(t, r.k) && (r.k !== 'production' || productionsFor(t).length > 1) && (r.k !== 'zone' || !(o && o.zone)));
   async function freeSpin(k) {
     const s = S(); const t = s[k]; const rk = $('#fsel-' + k).value;
-    if (busy || !t || !freeOptions(t).some(r => r.k === rk) || (s.free && s.free[k])) return;
+    if (busy || !t || !freeOptions(t, s[other(k)]).some(r => r.k === rk) || (s.free && s.free[k])) return;
     const before = structuredClone(s); const next = structuredClone(s);
     const me = next[k], them = next[other(k)] || {};
     const was = show(rk, me);
@@ -707,7 +720,7 @@ td { font-weight: 600; }
       });
       const n = TEAM_REELS.filter(r => has(t, r.k)).length;
       cab.querySelector('[data-progress]').textContent = !s.teams ? 'Reels open once the teams are spun.' : n === TEAM_REELS.length ? 'All ten reels spun.' : n + ' of ' + TEAM_REELS.length + ' reels spun.';
-      const usedOn = s.free && s.free[k], opts = freeOptions(t), fsel = cab.querySelector('#fsel-' + k), keep = fsel.value;
+      const usedOn = s.free && s.free[k], opts = freeOptions(t, s[other(k)]), fsel = cab.querySelector('#fsel-' + k), keep = fsel.value;
       fsel.innerHTML = opts.map(r => '<option value="' + r.k + '">' + r.label + '</option>').join('');
       if (opts.some(r => r.k === keep)) fsel.value = keep;
       cab.querySelector('.free').hidden = !s.teams || !!usedOn || !opts.length;
