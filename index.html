@@ -231,7 +231,7 @@ td { font-weight: 600; }
   </section>
 
   <section class="stage" aria-labelledby="h-cab">
-    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour and number plate always come out different for the two teams. The zones are always diagonally opposite, and the second crop always comes from the same earnings group as the first. Production unlocks once crop and animal have landed, and always uses something you grow or keep. Each team also gets <b>one free re-spin</b>, on any reel except the wildcard.</p></div>
+    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour and number plate always come out different for the two teams. The zones are always diagonally opposite, and the second crop always comes from the same earnings group as the first. Production, number plate and farm name unlock once crop and animal have landed: the production always uses something you grow or keep, and the plate and name are picked to suit your farm. Each team also gets <b>one free re-spin</b>, on any reel except the wildcard.</p></div>
     <div class="cabinets" id="cabinets"></div>
   </section>
 
@@ -281,10 +281,10 @@ td { font-weight: 600; }
         <h3>What your spin means</h3>
         <ul>
           <li><b>Free re-spin:</b> each team gets one on launch night, on any reel except the wildcard. Use it or lose it.</li>
-          <li><b>Farm name:</b> what your farm's called in the game, picked from 100. No renaming it.</li>
+          <li><b>Farm name:</b> what your farm's called in the game, usually picked to suit your animal, crop or brand. No renaming it.</li>
           <li><b>Tractor brand:</b> every tractor must be your brand. Combines, loaders, telehandlers, lorries and tools can be any brand.</li>
           <li><b>Farm colour:</b> set your farm's colour in the game to it (or the nearest one), and paint every machine you can in it, tractors included.</li>
-          <li><b>Number plate:</b> set it as the custom plate on every machine that takes one. Hutan Pantai's plates only take 6 characters, so on that map the reel only lands on plates that fit.</li>
+          <li><b>Number plate:</b> usually picked to suit your farm. Set it as the custom plate on every machine that takes one. Hutan Pantai's plates only take 6 characters, so on that map the reel only lands on plates that fit.</li>
           <li><b>Zone:</b> all your land and buildings sit in your zone. The two zones are always diagonally opposite, and the lines are set per map so both get a fair share of land.</li>
           <li><b>Crop:</b> your crop (No animals gives you a second), plus anything your spun production uses. Crops come in two earnings groups, arable (wheat, barley, oats, canola, sunflowers) and roots (potatoes, sugar beet, carrots), and the second team always lands in the first team's group. Seasonal growth is off, so you can sow straight away. Anything already growing on land you buy is yours to harvest, sell or process. Grass is fine for feeding your own animals, but not for selling.</li>
           <li><b>Animal:</b> the only animal you keep. No dairy (no dairy cows, goats or buffalo) and no bees.</li>
@@ -411,22 +411,41 @@ td { font-weight: 600; }
     'Farmhand': 'The other team lends you a player 3 times, 30 minutes a time.',   // George's idea, 1 Oct
     'Insurance': 'One mistake of your own refunded in full.',
   };
-  // 100 farm names (Norton, 1 Oct: "pun/innuendo farm names and make the farm name a spin as well"). The two teams never get the same one.
+  // Farm names (Norton, 1 Oct). The two teams never get the same one, and most suit the farm (NAME_TAGS below).
   const FARM_NAMES = [
-    'Moo-lin Rouge', 'Udderly Filthy', 'Steak Out', 'Bull Shed', 'Load of Bull', 'Horny Bull Ranch', 'Hoof Hearted', 'Till the Cows Come Home', 'Meat & Two Veg', 'Cockermouth Cattle Co.', 'Swine & Dine', 'Porky Pies', 'Pork Sword Pigs', 'Trotters Independent', 'Penistone Pigs', 'Bangers & Mash', 'Sausage Fest Farm', 'Ram Raiders', 'Ram It Home', 'Tup Gear', 'Mutton Dressed as Lamb', 'Lamb Shank Redemption', 'Wham Bam Thank Ewe', 'Big Cock Poultry', 'Cock & Bull Farm', 'Cluck Off', 'Cluck Around & Find Out', 'Plucking Hell', 'Chick Magnets', 'Great Cockup Farm', 'Hay Big Spender', 'Hay Big Boy', 'Fifty Shades of Hay', 'Roll in the Hay', 'Big Bale Energy', 'Grassholes', 'Silage Idiots', 'Muckingham Palace', 'Muck & Fumble', 'Muck Off', 'Muck Me Gently', 'Slurry Not Sorry', 'Pump & Dump Slurry', 'Shitterton Hall', 'Corn Stars', 'Cornhub', 'Wheat Dreams', 'Wetwang Wheat', 'Get Your Oats', 'Sow Your Wild Oats', 'Spuds & Studs', 'Sugar Daddies', 'Melons & Plums', 'Big Marrow Farm', 'Dick Turnip', 'Ploughed Hard', 'Long Hard Furrow', 'PTO Shafted', 'Harvest Mooners', 'Fork Off', 'Bell End Barns', 'Scratchy Bottom Farm', 'Tilly Willy Farm', 'Big Johnson Holdings', 'Seymour Butts Farm', 'Pratts Bottom Farm', 'Brown Willy Farm', 'Twatt Hall', 'Happy Bottom Farm', 'Brokenwind Farm', 'Crapstone Farm', 'Lickey End Farm', 'Knockerdown Farm', 'Thong Farm', 'Ugley Farm', 'Nether Wallop Farm', 'Suckler Punch', 'Sow Long Suckers', 'Ham Solo', 'Truffle Shuffle', 'Steak Your Claim', 'Moo Point', 'Shear Khan', 'Ewe Beaut', 'Silence of the Lambs', 'Pullet Surprise', 'Coop de Grâce', 'Clucking Bell', 'Hen Party', 'Grain Damage', 'Oat Couture', 'Canola Get a Witness', 'Fast & Furrowous', 'John Deere Diary', 'Trailer Trash', 'The Muck Stops Here', 'Slurry Potter', 'Shit Creek Farm', 'Moist Pastures', 'Shaft & Furrow'];
+    'Moo-lin Rouge', 'Udderly Filthy', 'Steak Out', 'Bull Shed', 'Load of Bull', 'Horny Bull Ranch', 'Hoof Hearted', 'Till the Cows Come Home', 'Meat & Two Veg', 'Cockermouth Cattle Co.', 'Swine & Dine', 'Porky Pies', 'Pork Sword Pigs', 'Trotters Independent', 'Penistone Pigs', 'Bangers & Mash', 'Sausage Fest Farm', 'Ram Raiders', 'Ram It Home', 'Tup Gear', 'Mutton Dressed as Lamb', 'Lamb Shank Redemption', 'Wham Bam Thank Ewe', 'Big Cock Poultry', 'Cock & Bull Farm', 'Cluck Off', 'Cluck Around & Find Out', 'Plucking Hell', 'Chick Magnets', 'Great Cockup Farm', 'Hay Big Spender', 'Hay Big Boy', 'Fifty Shades of Hay', 'Roll in the Hay', 'Big Bale Energy', 'Grassholes', 'Silage Idiots', 'Muckingham Palace', 'Muck & Fumble', 'Muck Off', 'Muck Me Gently', 'Slurry Not Sorry', 'Pump & Dump Slurry', 'Shitterton Hall', 'Corn Stars', 'Cornhub', 'Wheat Dreams', 'Wetwang Wheat', 'Get Your Oats', 'Sow Your Wild Oats', 'Spuds & Studs', 'Sugar Daddies', 'Melons & Plums', 'Big Marrow Farm', 'Dick Turnip', 'Ploughed Hard', 'Long Hard Furrow', 'PTO Shafted', 'Harvest Mooners', 'Fork Off', 'Bell End Barns', 'Scratchy Bottom Farm', 'Tilly Willy Farm', 'Big Johnson Holdings', 'Seymour Butts Farm', 'Pratts Bottom Farm', 'Brown Willy Farm', 'Twatt Hall', 'Happy Bottom Farm', 'Brokenwind Farm', 'Crapstone Farm', 'Lickey End Farm', 'Knockerdown Farm', 'Thong Farm', 'Ugley Farm', 'Nether Wallop Farm', 'Suckler Punch', 'Sow Long Suckers', 'Ham Solo', 'Truffle Shuffle', 'Steak Your Claim', 'Moo Point', 'Shear Khan', 'Ewe Beaut', 'Silence of the Lambs', 'Pullet Surprise', 'Coop de Grâce', 'Clucking Bell', 'Hen Party', 'Grain Damage', 'Oat Couture', 'Canola Get a Witness', 'Fast & Furrowous', 'John Deere Diary', 'Trailer Trash', 'The Muck Stops Here', 'Slurry Potter', 'Shit Creek Farm', 'Moist Pastures', 'Shaft & Furrow', 'Barley Getting By', 'Head Turners', 'Oil Be Back', 'Beet Off Farm', 'Mash Gordon', 'Carrot & Dick', 'Root of All Evil', 'Rooting Around'];
   // 100 number plates (Norton, 1 Oct: "need to be a bit smarter to be funny" - Brad's old NOFATCHIX is the bar). Letters and numbers only.
   // FS25's custom plate takes 9 characters on Riverbend Springs and Zielonka but only 6 on Hutan Pantai, so on Hutan the reel only uses the short ones.
-  const PLATES = ['SKIDMK', 'CHODE1', 'TITSUP', 'SHITBX', 'COCKUP', 'BOLLOX', 'BULSHT', 'MUCKUP', 'TODGER', 'BALLSY', 'PORKSW', 'NICERK', 'BANGER', 'TUPPED', 'PLOWED', 'DRILLD', 'SPREAD', 'SEEDER', 'GOBBLE', 'DOGGY1', 'TEABAG', 'DUMPER', 'FILLUP', 'PULOUT', 'CREAMD', 'MILKED', 'GITGUD', 'SWEATY', 'RAGEQT', 'NOMOT', 'UNTAXD', 'SORNED', 'BIGRIG', 'EWEUP', 'AIBULL', 'DIPSTK', 'CLUCKU', 'PLUCKU', 'DVLANO', 'SHEMAG', 'CLAASY', 'GRASSD', 'PIGOUT', 'HAMFST', 'PORKY', 'BOARED', 'LARDAS', 'HOGWSH', 'RAMBO', 'BAAAAD', 'BEEFIN', 'LAIDUP', 'MUKKER', 'DUNGHO', 'FRIDGE', 'NOFATCHIX', 'CHIXDIGIT', 'GETLAID', 'ROADHOG', 'PIGGYBANK', 'BEEFCAKE', 'MEATWAGON', 'UDDERMESS', 'STUDFARM', 'WELLHUNG', 'RAMPANT', 'SHEARLOCK', 'LAMBGHINI', 'DEERJOHN', 'CLAASACT', 'FENDTBNDR', 'AGRIVATED', 'WIDELOAD', 'LONGLOAD', 'BALLHITCH', 'TOWBALLS', 'PTOSHAFT', 'REDDIESEL', 'MOTFAILED', 'DVLASAYNO', 'RUSTBUCKT', 'TUPWARE', 'SLURRYUP', 'LASTSTRAW', 'HIGHSTKS', 'QUICKIE', 'SOWDIRTY', '1NSEMIN8', 'ILLBEON', 'ANYONEON', 'INAMOMENT', '8ISH4ME', 'GEORGTAXI', 'MILKPAYS', 'HLTHYBOWL', 'SOUNDJOB', 'NODRAMA', 'ONMYWAY', 'MOMENTS', '4X4PLAY'];
+  const PLATES = ['SKIDMK', 'CHODE1', 'TITSUP', 'SHITBX', 'COCKUP', 'BOLLOX', 'BULSHT', 'MUCKUP', 'TODGER', 'BALLSY', 'PORKSW', 'NICERK', 'BANGER', 'TUPPED', 'PLOWED', 'DRILLD', 'SPREAD', 'SEEDER', 'GOBBLE', 'DOGGY1', 'TEABAG', 'DUMPER', 'FILLUP', 'PULOUT', 'CREAMD', 'MILKED', 'GITGUD', 'SWEATY', 'RAGEQT', 'NOMOT', 'UNTAXD', 'SORNED', 'BIGRIG', 'EWEUP', 'AIBULL', 'DIPSTK', 'CLUCKU', 'PLUCKU', 'DVLANO', 'SHEMAG', 'CLAASY', 'GRASSD', 'PIGOUT', 'HAMFST', 'PORKY', 'BOARED', 'LARDAS', 'HOGWSH', 'RAMBO', 'BAAAAD', 'BEEFIN', 'LAIDUP', 'MUKKER', 'DUNGHO', 'FRIDGE', 'NOFATCHIX', 'CHIXDIGIT', 'GETLAID', 'ROADHOG', 'PIGGYBANK', 'BEEFCAKE', 'MEATWAGON', 'UDDERMESS', 'STUDFARM', 'WELLHUNG', 'RAMPANT', 'SHEARLOCK', 'LAMBGHINI', 'DEERJOHN', 'CLAASACT', 'FENDTBNDR', 'AGRIVATED', 'WIDELOAD', 'LONGLOAD', 'BALLHITCH', 'TOWBALLS', 'PTOSHAFT', 'REDDIESEL', 'MOTFAILED', 'DVLASAYNO', 'RUSTBUCKT', 'TUPWARE', 'SLURRYUP', 'LASTSTRAW', 'HIGHSTKS', 'QUICKIE', 'SOWDIRTY', '1NSEMIN8', 'ILLBEON', 'ANYONEON', 'INAMOMENT', '8ISH4ME', 'GEORGTAXI', 'MILKPAYS', 'HLTHYBOWL', 'SOUNDJOB', 'NODRAMA', 'ONMYWAY', 'MOMENTS', '4X4PLAY', 'SPUDGUN', 'CHIPPY', 'SUGARDDY', 'OILBEBAK', 'CORNHB', 'ROOTER', 'BIGCARROT'];
   const platePool = () => (S().map === 'Hutan Pantai' ? PLATES.filter(p => p.length <= 6) : PLATES);
+  // Norton, 1 Oct: names and plates should suit the farm ("CLUCKU is good for chickens but daft if you've got carrots"). Each is tagged with the
+  // animal, crop, crop group or brand it suits; untagged ones (and 'any') suit everyone. Two times in three the reel picks one that fits.
+  const NAME_TAGS = { 'Moo-lin Rouge': 'cattle', 'Udderly Filthy': 'cattle', 'Steak Out': 'cattle', 'Bull Shed': 'cattle', 'Load of Bull': 'cattle', 'Horny Bull Ranch': 'cattle', 'Hoof Hearted': 'cattle', 'Till the Cows Come Home': 'cattle', 'Cockermouth Cattle Co.': 'cattle', 'Suckler Punch': 'cattle', 'Steak Your Claim': 'cattle', 'Moo Point': 'cattle', 'Porky Pies': 'pigs', 'Pork Sword Pigs': 'pigs', 'Trotters Independent': 'pigs', 'Penistone Pigs': 'pigs', 'Bangers & Mash': 'pigs', 'Sausage Fest Farm': 'pigs', 'Sow Long Suckers': 'pigs', 'Ham Solo': 'pigs', 'Truffle Shuffle': 'pigs', 'Ram Raiders': 'sheep', 'Ram It Home': 'sheep', 'Tup Gear': 'sheep', 'Mutton Dressed as Lamb': 'sheep', 'Lamb Shank Redemption': 'sheep', 'Wham Bam Thank Ewe': 'sheep', 'Shear Khan': 'sheep', 'Ewe Beaut': 'sheep', 'Silence of the Lambs': 'sheep', 'Big Cock Poultry': 'chickens', 'Cluck Off': 'chickens', 'Cluck Around & Find Out': 'chickens', 'Plucking Hell': 'chickens', 'Chick Magnets': 'chickens', 'Pullet Surprise': 'chickens', 'Coop de Grâce': 'chickens', 'Clucking Bell': 'chickens', 'Hen Party': 'chickens', 'Cock & Bull Farm': 'chickens cattle', 'Great Cockup Farm': 'chickens any', 'John Deere Diary': 'johndeere any', 'Corn Stars': 'arable', Cornhub: 'arable', 'Grain Damage': 'arable', 'Wheat Dreams': 'wheat', 'Wetwang Wheat': 'wheat', 'Get Your Oats': 'oats', 'Sow Your Wild Oats': 'oats', 'Oat Couture': 'oats', 'Canola Get a Witness': 'canola', 'Barley Getting By': 'barley', 'Head Turners': 'sunflowers', 'Oil Be Back': 'canola sunflowers', 'Spuds & Studs': 'potatoes', 'Mash Gordon': 'potatoes', 'Sugar Daddies': 'sugarbeet', 'Beet Off Farm': 'sugarbeet', 'Carrot & Dick': 'carrots', 'Dick Turnip': 'roots', 'Root of All Evil': 'roots', 'Rooting Around': 'roots' };
+  const PLATE_TAGS = { CLUCKU: 'chickens', PLUCKU: 'chickens', CHIXDIGIT: 'chickens', GETLAID: 'chickens', LAIDUP: 'chickens', GOBBLE: 'chickens', NOFATCHIX: 'chickens any', COCKUP: 'chickens any', PIGOUT: 'pigs', HAMFST: 'pigs', PORKY: 'pigs', BOARED: 'pigs', LARDAS: 'pigs', HOGWSH: 'pigs', PIGGYBANK: 'pigs', SOWDIRTY: 'pigs', ROADHOG: 'pigs any', PORKSW: 'pigs any', BANGER: 'pigs any', TUPWARE: 'sheep', TUPPED: 'sheep', EWEUP: 'sheep', BAAAAD: 'sheep', SHEARLOCK: 'sheep', RAMBO: 'sheep', RAMPANT: 'sheep', LAMBGHINI: 'sheep', AIBULL: 'cattle', '1NSEMIN8': 'cattle', BEEFIN: 'cattle', BEEFCAKE: 'cattle', UDDERMESS: 'cattle', BULSHT: 'cattle', HIGHSTKS: 'cattle', MEATWAGON: 'cattle pigs any', STUDFARM: 'cattle any', WELLHUNG: 'cattle any', LASTSTRAW: 'arable any', SEEDER: 'arable any', CORNHB: 'arable', SPUDGUN: 'potatoes', CHIPPY: 'potatoes', SUGARDDY: 'sugarbeet', OILBEBAK: 'canola sunflowers', ROOTER: 'roots', BIGCARROT: 'carrots', CLAASY: 'claas', CLAASACT: 'claas', DEERJOHN: 'johndeere', FENDTBNDR: 'fendt' };
+  const ANIMAL_TAG = { 'Beef cattle': 'cattle', Pigs: 'pigs', Sheep: 'sheep', Chickens: 'chickens' };
+  const CROP_TAG = { Wheat: 'wheat', Barley: 'barley', Oats: 'oats', Canola: 'canola', Sunflowers: 'sunflowers', 'Sugar beet': 'sugarbeet', Potatoes: 'potatoes', Carrots: 'carrots' };
+  const BRAND_TAG = { Claas: 'claas', 'John Deere': 'johndeere', Fendt: 'fendt' };
+  function teamTags(t) {
+    const tags = new Set([ANIMAL_TAG[t.animal], BRAND_TAG[t.brand]]);
+    [t.crop, t.extra].filter(Boolean).forEach(c => { tags.add(CROP_TAG[c]); tags.add(CROP_GROUP[c]); });
+    return tags;
+  }
+  function fitPick(list, tagMap, t, not) {
+    const tags = teamTags(t), free = list.filter(x => !not.includes(x));
+    const fits = free.filter(x => tagMap[x] && tagMap[x].split(' ').some(g => tags.has(g)));
+    const general = free.filter(x => !tagMap[x] || tagMap[x].split(' ').includes('any'));
+    const pool = fits.length && (rnd(3) < 2 || !general.length) ? fits : general.length ? general : free;
+    return pool[rnd(pool.length)];
+  }
   const TEAM_REELS = [
-    { k: 'name', label: 'Farm name', pool: FARM_NAMES },
     { k: 'brand', label: 'Tractor brand', pool: BRANDS },
-    { k: 'plate', label: 'Number plate', pool: PLATES },
     { k: 'colour', label: 'Farm colour', pool: Object.keys(COLOURS) },
     { k: 'zone', label: 'Zone', pool: ZONES },
     { k: 'crop', label: 'Crop', pool: CROPS },
     { k: 'animal', label: 'Animal', pool: ANIMALS },
     { k: 'production', label: 'Production', pool: Object.keys(PRODUCTIONS) },
+    { k: 'plate', label: 'Number plate', pool: PLATES },
+    { k: 'name', label: 'Farm name', pool: FARM_NAMES },
     { k: 'twist', label: 'Twist', pool: Object.keys(TWISTS) },
     { k: 'wild', label: 'Wildcard', pool: Object.keys(WILDS) },
   ];
@@ -462,9 +481,9 @@ td { font-weight: 600; }
   }
   // One reel at a time. Brand, colour and zone can't match whatever the other team already has.
   function rollReel(t, o, rk) {
-    if (rk === 'name') t.name = pick(FARM_NAMES, o.name ? [o.name] : []);
+    if (rk === 'name') t.name = fitPick(FARM_NAMES, NAME_TAGS, t, o.name ? [o.name] : []);
     if (rk === 'brand') t.brand = pick(BRANDS, o.brand ? [o.brand] : []);
-    if (rk === 'plate') t.plate = pick(platePool(), o.plate ? [o.plate] : []);
+    if (rk === 'plate') t.plate = fitPick(platePool(), PLATE_TAGS, t, o.plate ? [o.plate] : []);
     if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), o.colour ? [o.colour] : []);
     if (rk === 'zone') t.zone = o.zone ? OPPOSITE[o.zone] : pick(ZONES);
     if (rk === 'crop') t.crop = pickCrop(t, o, [t.extra, o.crop]);
@@ -475,7 +494,8 @@ td { font-weight: 600; }
   }
   const has = (t, rk) => !!(t && t[rk] != null);
   const full = t => TEAM_REELS.every(r => has(t, r.k));
-  const canRoll = (s, k, rk) => !!s.teams && !has(s[k], rk) && (rk !== 'production' || (has(s[k], 'crop') && has(s[k], 'animal')));
+  const AFTER_CROP = ['production', 'plate', 'name'];   // these suit the farm, so they wait for crop and animal
+  const canRoll = (s, k, rk) => !!s.teams && !has(s[k], rk) && (!AFTER_CROP.includes(rk) || (has(s[k], 'crop') && has(s[k], 'animal')));
   const show = (k, t) => (k === 'animal' && t.animal === 'No animals' ? 'No animals + ' + t.extra : t[k]);
   function subFor(k, t, used) {
     if (k === 'production') {
@@ -593,9 +613,9 @@ td { font-weight: 600; }
     let extraNote = '';
     const extras = { [k]: me.extra, [other(k)]: them.extra };
     if (t.wild === 'Re-spin') {
-      if (target === 'name') me.name = pick(FARM_NAMES, [me.name, them.name]);
+      if (target === 'name') me.name = fitPick(FARM_NAMES, NAME_TAGS, me, [me.name, them.name]);
       if (target === 'brand') me.brand = pick(BRANDS, [me.brand, them.brand]);
-      if (target === 'plate') me.plate = pick(platePool(), [me.plate, them.plate]);
+      if (target === 'plate') me.plate = fitPick(platePool(), PLATE_TAGS, me, [me.plate, them.plate]);
       if (target === 'colour') me.colour = pick(Object.keys(COLOURS), [me.colour, them.colour]);
       if (target === 'crop') me.crop = pickCrop(me, them, [me.crop, me.extra, them.crop]);
       if (target === 'animal') { me.animal = pick(ANIMALS, [me.animal]); me.extra = me.animal === 'No animals' ? pickCrop(me, them, [me.crop, them.crop]) : null; }
@@ -625,9 +645,9 @@ td { font-weight: 600; }
   // Norton, 1 Oct: one free re-spin per team, on any reel except the wildcard. Same rules as a first spin: farm name, brand, plate,
   // colour and zone still can't match the other team, and the production follows the crop or animal.
   function rerollReel(t, o, rk) {
-    if (rk === 'name') t.name = pick(FARM_NAMES, [t.name, o.name]);
+    if (rk === 'name') t.name = fitPick(FARM_NAMES, NAME_TAGS, t, [t.name, o.name]);
     if (rk === 'brand') t.brand = pick(BRANDS, [t.brand, o.brand]);
-    if (rk === 'plate') t.plate = pick(platePool(), [t.plate, o.plate]);
+    if (rk === 'plate') t.plate = fitPick(platePool(), PLATE_TAGS, t, [t.plate, o.plate]);
     if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), [t.colour, o.colour]);
     if (rk === 'zone') t.zone = pick(ZONES, [t.zone]);
     if (rk === 'crop') t.crop = pickCrop(t, o, [t.crop, t.extra, o.crop]);
@@ -714,7 +734,7 @@ td { font-weight: 600; }
       TEAM_REELS.forEach(r => {
         const box = cab.querySelector('[data-reel="' + r.k + '"]');
         const done = has(t, r.k);
-        const waiting = r.k === 'production' && !done && !(has(t, 'crop') && has(t, 'animal'));
+        const waiting = AFTER_CROP.includes(r.k) && !done && !(has(t, 'crop') && has(t, 'animal'));
         setReel(box, done ? show(r.k, t) : null, done ? subFor(r.k, t, s.used[k]) : waiting && s.teams ? 'Unlocks once crop and animal have landed.' : '', done && r.k === 'colour' ? COLOURS[t.colour] : null);
         const b = box.querySelector('[data-spin]');
         b.hidden = done;
