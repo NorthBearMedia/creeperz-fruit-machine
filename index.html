@@ -224,7 +224,7 @@ td { font-weight: 600; }
   </section>
 
   <section class="stage" aria-labelledby="h-teams">
-    <div class="stage-head"><h2 id="h-teams">Spin 2 · The teams</h2><p>Practice spins here are random across the three pairings. The real teams were agreed on party chat: Norton + George v Danny + Brad, and on launch night the reel lands on them.</p></div>
+    <div class="stage-head"><h2 id="h-teams">Spin 2 · The teams</h2><p>Two teams of two. Practice spins here are random across the three pairings.</p></div>
     <div class="reel big empty" id="r-teams"><span class="lbl">Teams</span><span class="val">?</span><span class="sub"></span></div>
     <button class="pull" id="b-teams" type="button">Spin the teams</button>
   </section>
@@ -429,8 +429,7 @@ td { font-weight: 600; }
   const pick = (arr, not = []) => { const pool = arr.filter(x => !not.includes(x)); return pool[rnd(pool.length)]; };
   const other = k => (k === 'A' ? 'B' : 'A');
   const pairText = p => p[0].join(' + ') + '  v  ' + p[1].join(' + ');
-  // Norton, 1 Oct: the four agreed the teams on party chat. Live, the reel spins for the stream and lands on them; the lads' practice
-  // page says the teams were agreed. Practice spins stay random.
+  // Norton, 1 Oct: the four agreed the teams on party chat. Live, the reel spins for the stream and lands on them; practice spins stay random.
   const AGREED_TEAMS = [['Norton', 'George'], ['Danny', 'Brad']];
 
   function productionsFor(t) {
