@@ -170,6 +170,7 @@ td { font-weight: 600; }
 }
 .log .t { color: #c98a1e; }
 .log .empty { color: #8a5a2a; }
+.free-note { margin: -4px 0 0; font-size: 14px; }
 .owner-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 
 /* rules */
@@ -230,7 +231,7 @@ td { font-weight: 600; }
   </section>
 
   <section class="stage" aria-labelledby="h-cab">
-    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour, number plate and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep.</p></div>
+    <div class="stage-head"><h2 id="h-cab">Spin 3 · The team machines</h2><p>Every reel gets its own spin, in any order. Taking turns works well: Team A's brand, then Team B's, and so on. Farm name, brand, colour, number plate and zone always come out different for the two teams. Production unlocks once crop and animal have landed, and always uses something you grow or keep. Each team also gets <b>one free re-spin</b>, on any reel except the wildcard.</p></div>
     <div class="cabinets" id="cabinets"></div>
   </section>
 
@@ -279,6 +280,7 @@ td { font-weight: 600; }
       <div class="rulecard">
         <h3>What your spin means</h3>
         <ul>
+          <li><b>Free re-spin:</b> each team gets one on launch night, on any reel except the wildcard. Use it or lose it.</li>
           <li><b>Farm name:</b> what your farm's called in the game, picked from 100. No renaming it.</li>
           <li><b>Tractor brand:</b> every tractor must be your brand. Combines, loaders, telehandlers, lorries and tools can be any brand.</li>
           <li><b>Kit colour:</b> paint everything you can in your colour.</li>
@@ -356,7 +358,7 @@ td { font-weight: 600; }
   const PREFIX = '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + RESET_CSS + '</style></head><body>';
   const SUFFIX = '</body></html>';
 
-  const blank = () => ({ v: 1, map: null, teams: null, A: null, B: null, used: { A: false, B: false }, log: [] });
+  const blank = () => ({ v: 1, map: null, teams: null, A: null, B: null, used: { A: false, B: false }, free: { A: null, B: null }, log: [] });
   let LIVE;
   try { LIVE = Object.assign(blank(), JSON.parse($('#state').textContent || '{}')); } catch (e) { LIVE = blank(); }
   let PRACTICE = blank();
@@ -403,6 +405,12 @@ td { font-weight: 600; }
     'Free production': 'One production building, worth up to £250k.',
     'Brand pass': 'Two machines from any brand.',
     'Twist break': 'Ignore your twist for one game month.',
+    'Land grab': 'One plot in the other team’s zone, worth up to £250k. Free.',
+    'Big yard': 'Your yard reaches 160 m instead of 130 m.',
+    'Extra building': 'One more of anything over its limit: a 3rd of a kind, a 6th barn or a 21st production.',
+    'Fuel card': 'Diesel refunded for three game months.',
+    'Wages paid': 'Hired help refunded for three game months.',
+    'Insurance': 'One mistake of your own refunded in full.',
   };
   // 100 farm names (Norton, 1 Oct: "pun/innuendo farm names and make the farm name a spin as well"). The two teams never get the same one.
   const FARM_NAMES = [
@@ -522,7 +530,7 @@ td { font-weight: 600; }
       requestAnimationFrame(tick);
     });
   }
-  function setBusy(b) { busy = b; document.querySelectorAll('.pull, .mini, #wild button, #wild select, .tab, #b-reset').forEach(el => { el.disabled = b || el.dataset.off === '1'; }); }
+  function setBusy(b) { busy = b; document.querySelectorAll('.pull, .mini, #wild button, #wild select, .free select, .tab, #b-reset').forEach(el => { el.disabled = b || el.dataset.off === '1'; }); }
 
   // ---- actions ---------------------------------------------------------
   async function spin(kind) {
@@ -600,6 +608,40 @@ td { font-weight: 600; }
     if (VIEW === 'practice' || !ok) render();
   }
 
+  // Norton, 1 Oct: one free re-spin per team, on any reel except the wildcard. Same rules as a first spin: farm name, brand, plate,
+  // colour and zone still can't match the other team, and the production follows the crop or animal.
+  function rerollReel(t, o, rk) {
+    if (rk === 'name') t.name = pick(FARM_NAMES, [t.name, o.name]);
+    if (rk === 'brand') t.brand = pick(BRANDS, [t.brand, o.brand]);
+    if (rk === 'plate') t.plate = pick(PLATES, [t.plate, o.plate]);
+    if (rk === 'colour') t.colour = pick(Object.keys(COLOURS), [t.colour, o.colour]);
+    if (rk === 'zone') t.zone = pick(ZONES, [t.zone, o.zone]);
+    if (rk === 'crop') t.crop = pick(CROPS, [t.crop, t.extra].filter(Boolean));
+    if (rk === 'animal') { t.animal = pick(ANIMALS, [t.animal]); t.extra = t.animal === 'No animals' ? pick(CROPS, [t.crop]) : null; }
+    if (rk === 'production') t.production = pick(productionsFor(t), [t.production]);
+    if (rk === 'twist') t.twist = pick(Object.keys(TWISTS), [t.twist]);
+  }
+  const freeOptions = t => TEAM_REELS.filter(r => r.k !== 'wild' && has(t, r.k) && (r.k !== 'production' || productionsFor(t).length > 1));
+  async function freeSpin(k) {
+    const s = S(); const t = s[k]; const rk = $('#fsel-' + k).value;
+    if (busy || !t || !freeOptions(t).some(r => r.k === rk) || (s.free && s.free[k])) return;
+    const before = structuredClone(s); const next = structuredClone(s);
+    const me = next[k], them = next[other(k)] || {};
+    const was = show(rk, me);
+    rerollReel(me, them, rk);
+    const note = rk !== 'production' && fixProduction(me) ? ' Production now ' + me.production + '.' : '';
+    next.free = Object.assign({ A: null, B: null }, next.free); next.free[k] = rk;
+    const reel = TEAM_REELS.find(r => r.k === rk);
+    setBusy(true); status('');
+    const box = $('#cab-' + k).querySelector('[data-reel="' + rk + '"]');
+    box.querySelector('.sub').textContent = '';
+    await animate(box.querySelector('.val'), reel.pool, show(rk, me), 1900);
+    next.log.push({ t: stamp(), what: 'Team ' + k + ' free re-spin', result: reel.label + ': ' + was + ' → ' + show(rk, me) + '.' + note });
+    const ok = await commit(next, before);
+    setBusy(false);
+    if (VIEW === 'practice' || !ok) render();
+  }
+
   let resetArmed = 0;
   async function resetAll() {
     if (busy) return;
@@ -624,8 +666,11 @@ td { font-weight: 600; }
       '<article class="cabinet" id="cab-' + k + '"><div class="cab-head"><h3>Team ' + k + '</h3><span class="players" data-players></span></div>' +
       '<div class="reels">' + TEAM_REELS.map(r => '<div class="reel empty" data-reel="' + r.k + '"><span class="lbl">' + r.label + '</span><span class="val">?</span><span class="sub"></span>' +
         '<button class="mini" type="button" data-spin="' + k + ':' + r.k + '" aria-label="Spin Team ' + k + ' ' + r.label.toLowerCase() + '">Spin</button></div>').join('') + '</div>' +
-      '<p class="progress" data-progress></p></article>').join('');
+      '<p class="progress" data-progress></p>' +
+      '<div class="wrow free"><label class="note" for="fsel-' + k + '">Free re-spin</label><select id="fsel-' + k + '"></select>' +
+      '<button class="mini" type="button" data-free="' + k + '">Re-spin it</button></div><p class="note free-note" data-free-note></p></article>').join('');
     document.querySelectorAll('[data-spin]').forEach(b => b.addEventListener('click', () => { const [k, rk] = b.dataset.spin.split(':'); spinReel(k, rk); }));
+    document.querySelectorAll('[data-free]').forEach(b => b.addEventListener('click', () => freeSpin(b.dataset.free)));
   }
   function setReel(box, val, sub, colour) {
     box.classList.toggle('empty', !val);
@@ -663,6 +708,13 @@ td { font-weight: 600; }
       });
       const n = TEAM_REELS.filter(r => has(t, r.k)).length;
       cab.querySelector('[data-progress]').textContent = !s.teams ? 'Reels open once the teams are spun.' : n === TEAM_REELS.length ? 'All ten reels spun.' : n + ' of ' + TEAM_REELS.length + ' reels spun.';
+      const usedOn = s.free && s.free[k], opts = freeOptions(t), fsel = cab.querySelector('#fsel-' + k), keep = fsel.value;
+      fsel.innerHTML = opts.map(r => '<option value="' + r.k + '">' + r.label + '</option>').join('');
+      if (opts.some(r => r.k === keep)) fsel.value = keep;
+      cab.querySelector('.free').hidden = !s.teams || !!usedOn || !opts.length;
+      cab.querySelector('[data-free-note]').textContent = !s.teams ? '' : usedOn ? 'Free re-spin used on ' + TEAM_REELS.find(r => r.k === usedOn).label.toLowerCase() + '.' : 'One free re-spin, on any reel except the wildcard.';
+      button(cab.querySelector('[data-free]'), !usedOn && opts.length > 0 && !liveLocked());
+      fsel.dataset.off = liveLocked() ? '1' : '0'; fsel.disabled = busy || liveLocked();
     });
 
     const wild = $('#wild');
